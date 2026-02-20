@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Plus, Settings, CheckSquare, Lightbulb } from 'lucide-react'
+import { Plus, Settings, CheckSquare, Lightbulb, BookOpen } from 'lucide-react'
 import { useTasks } from '@/lib/hooks/use-tasks'
 import { useAppStore } from '@/lib/store'
 import { ViewSwitcher } from '@/components/tasks/view-switcher'
@@ -16,6 +16,7 @@ import { TaskCalendarDay } from '@/components/tasks/task-calendar-day'
 import { TaskCalendarWeek } from '@/components/tasks/task-calendar-week'
 import { TaskCalendarMonth } from '@/components/tasks/task-calendar-month'
 import { ThoughtsSection } from '@/components/thoughts/thoughts-section'
+import { JournalSection } from '@/components/journal/journal-section'
 import type { Task, Workspace, Profile } from '@/lib/types'
 import Link from 'next/link'
 
@@ -121,6 +122,10 @@ export default function WorkspaceDashboard() {
             <Lightbulb className="h-4 w-4" />
             Przemyślenia
           </TabsTrigger>
+          <TabsTrigger value="journal" className="gap-1.5">
+            <BookOpen className="h-4 w-4" />
+            Dziennik
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="tasks" className="mt-4 space-y-4">
@@ -193,6 +198,10 @@ export default function WorkspaceDashboard() {
 
         <TabsContent value="thoughts" className="mt-4">
           <ThoughtsSection workspaceId={workspaceId} />
+        </TabsContent>
+
+        <TabsContent value="journal" className="mt-4">
+          <JournalSection workspaceId={workspaceId} />
         </TabsContent>
       </Tabs>
 

@@ -1,6 +1,7 @@
 export type TaskStatus = 'todo' | 'in_progress' | 'done'
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent'
 export type ThoughtType = 'thought' | 'goal' | 'achievement'
+export type JournalEntryType = 'note' | 'achieved_goal' | 'improvement'
 export type WorkspaceRole = 'owner' | 'admin' | 'member'
 export type CalendarView = 'list' | 'kanban' | 'day' | 'week' | 'month'
 export type AppMode = 'tasks' | 'calendar'
@@ -62,6 +63,16 @@ export interface Task {
   updated_at: string
   assigned_profile?: Profile
   creator_profile?: Profile
+}
+
+export interface JournalEntry {
+  id: string
+  content: string
+  type: JournalEntryType
+  workspace_id: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
 }
 
 export interface Thought {
