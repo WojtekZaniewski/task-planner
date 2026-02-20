@@ -29,6 +29,9 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
   const supabase = createClient()
   const [workspacesOpen, setWorkspacesOpen] = useState(true)
 
+  // Hide sidebar on hub page
+  if (pathname === '/private') return null
+
   async function handleLogout() {
     await supabase.auth.signOut()
     router.push('/login')
@@ -54,13 +57,13 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
           href="/private"
           className={cn(
             'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors',
-            pathname === '/private'
+            pathname.startsWith('/private')
               ? 'bg-primary/10 text-primary font-medium'
               : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
           )}
         >
           <CheckSquare className="h-4 w-4" />
-          Prywatne
+          Pulpit
         </Link>
 
         {/* Coworking section */}

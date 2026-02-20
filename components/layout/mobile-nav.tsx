@@ -16,13 +16,16 @@ interface MobileNavProps {
 const tabs = [
   { href: '/private', label: 'Pulpit', icon: Home },
   { href: '/coworking', label: 'Coworking', icon: Users },
-  { href: '/private', label: 'Kalendarz', icon: CalendarDays, query: '?view=month' },
-  { href: '/private', label: 'Dziennik', icon: BookOpen, query: '?tab=journal' },
+  { href: '/private/tasks', label: 'Zadania', icon: CalendarDays },
+  { href: '/private/journal', label: 'Dziennik', icon: BookOpen },
   { href: '/settings', label: 'Ustawienia', icon: Settings },
 ]
 
 export function MobileNav({ workspaces, userName, avatarUrl }: MobileNavProps) {
   const pathname = usePathname()
+
+  // Hide all navigation on hub page
+  if (pathname === '/private') return <></>
 
   const initials = userName
     .split(' ')
@@ -33,6 +36,8 @@ export function MobileNav({ workspaces, userName, avatarUrl }: MobileNavProps) {
 
   function isActive(href: string) {
     if (href === '/private') return pathname === '/private'
+    if (href === '/private/tasks') return pathname === '/private/tasks'
+    if (href === '/private/journal') return pathname === '/private/journal'
     if (href === '/coworking') return pathname.startsWith('/coworking')
     if (href === '/settings') return pathname === '/settings'
     return false

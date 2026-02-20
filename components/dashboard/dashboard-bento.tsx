@@ -25,7 +25,7 @@ const tiles = [
     glow: 'glow-orange',
     iconBg: 'bg-orange-500/10',
     iconColor: 'text-orange-500',
-    href: '/private',
+    href: '/private/tasks',
   },
   {
     key: 'workspace',
@@ -43,7 +43,7 @@ const tiles = [
     glow: 'glow-green',
     iconBg: 'bg-green-500/10',
     iconColor: 'text-green-500',
-    href: '/private',
+    href: '/private/journal',
   },
   {
     key: 'profile',
