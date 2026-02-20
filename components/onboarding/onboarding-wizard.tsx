@@ -84,7 +84,8 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
     setSaving(true)
     const { error } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: userId,
         full_name: name || 'User',
         age: age ? parseInt(age) : null,
         goals: goals.length > 0 ? goals : null,
@@ -93,7 +94,6 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
         theme,
         onboarding_completed: true,
       })
-      .eq('id', userId)
 
     if (error) {
       toast.error('Nie udało się zapisać profilu', { description: error.message })
