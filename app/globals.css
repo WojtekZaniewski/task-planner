@@ -108,4 +108,89 @@
     -webkit-backdrop-filter: blur(24px);
     border-right: 1px solid rgba(255, 255, 255, 0.06);
   }
+
+  /* Glow card — radial gradient from bottom center */
+  .glow-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .glow-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-card:hover::before {
+    opacity: 0.75;
+  }
+  .glow-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .glow-orange::before {
+    background: radial-gradient(ellipse at 50% 100%, rgba(249, 115, 22, 0.15) 0%, transparent 70%);
+  }
+  .glow-green::before {
+    background: radial-gradient(ellipse at 50% 100%, rgba(34, 197, 94, 0.15) 0%, transparent 70%);
+  }
+  .glow-blue::before {
+    background: radial-gradient(ellipse at 50% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+  }
+  .glow-purple::before {
+    background: radial-gradient(ellipse at 50% 100%, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+  }
+
+  /* Glass bottom tab bar */
+  .glass-bottom-bar {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .dark .glass-bottom-bar {
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Warm hover glow for task cards */
+  .task-card-warm {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .dark .task-card-warm:hover {
+    box-shadow: 0 0 20px -5px rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.15);
+  }
+
+  /* Glass card in light mode */
+  .glass-card-light {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 2px 4px -2px rgba(0, 0, 0, 0.03),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Auto glass for glow-card in light mode */
+:root:not(.dark) .glow-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -2px rgba(0, 0, 0, 0.03);
+}
+:root:not(.dark) .glow-card::before {
+  opacity: 0.25;
+}
+:root:not(.dark) .glow-card:hover::before {
+  opacity: 0.4;
 }

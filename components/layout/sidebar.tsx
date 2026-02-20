@@ -20,9 +20,10 @@ import { useState } from 'react'
 interface SidebarProps {
   workspaces: Workspace[]
   userName: string
+  avatarUrl?: string | null
 }
 
-export function Sidebar({ workspaces, userName }: SidebarProps) {
+export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()

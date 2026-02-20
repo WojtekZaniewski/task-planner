@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Plus, CheckSquare, BookOpen } from 'lucide-react'
 import { useTasks } from '@/lib/hooks/use-tasks'
 import { useAppStore } from '@/lib/store'
@@ -15,10 +16,16 @@ import { TaskCalendarWeek } from '@/components/tasks/task-calendar-week'
 import { TaskCalendarMonth } from '@/components/tasks/task-calendar-month'
 import { JournalSection } from '@/components/journal/journal-section'
 import { JournalSummary } from '@/components/journal/journal-summary'
+import { TaskStatsBento } from '@/components/dashboard/task-stats-bento'
 import type { Task, AppMode } from '@/lib/types'
 
 export default function PrivatePage() {
-  const { currentView, setCurrentView, appMode, setAppMode } = useAppStore()
+  const {
+    currentView, setCurrentView,
+    appMode, setAppMode,
+    userName, setUserName,
+    avatarUrl, setAvatarUrl,
+  } = useAppStore()
   const { tasks, loading, createTask, updateTask, deleteTask, changeStatus } =
     useTasks({ isPrivate: true })
 
@@ -26,20 +33,29 @@ export default function PrivatePage() {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
 
-  // Read app_mode from DOM data attribute set by server layout
+  // Read data attributes from DOM set by server layout
   useEffect(() => {
     const container = document.querySelector('[data-app-mode]')
     if (container) {
       const mode = container.getAttribute('data-app-mode') as AppMode
+      const name = container.getAttribute('data-user-name') || ''
+      const avatar = container.getAttribute('data-avatar-url') || null
       if (mode) {
         setAppMode(mode)
-        // Set default view based on mode
         if (mode === 'tasks' && !['day', 'week'].includes(currentView)) {
           setCurrentView('day')
         }
       }
+      if (name) setUserName(name)
+      if (avatar) setAvatarUrl(avatar)
     }
   }, [])
+
+  // Task stats
+  const todoCount = tasks.filter(t => t.status === 'todo').length
+  const inProgressCount = tasks.filter(t => t.status === 'in_progress').length
+  const doneCount = tasks.filter(t => t.status === 'done').length
+  const totalCount = tasks.length
 
   function handleEdit(task: Task) {
     setEditingTask(task)
@@ -64,6 +80,14 @@ export default function PrivatePage() {
     setCurrentView('day')
   }
 
+  const firstName = userName.split(' ')[0] || 'Użytkownik'
+  const initials = userName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U'
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -74,15 +98,35 @@ export default function PrivatePage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Prywatne</h1>
-        <p className="text-sm text-muted-foreground">
-          Twoje osobiste zadania, cele i dziennik
-        </p>
+      {/* Greeting Header */}
+      <div className="flex items-center gap-4">
+        <Avatar className="h-12 w-12 border-2 border-primary/20">
+          {avatarUrl && <AvatarImage src={avatarUrl} alt={userName} />}
+          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Cześć, {firstName}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {todoCount === 0
+              ? 'Wszystkie zadania zrobione!'
+              : `Masz ${todoCount} ${todoCount === 1 ? 'zadanie' : todoCount < 5 ? 'zadania' : 'zadań'} do zrobienia`}
+          </p>
+        </div>
       </div>
 
-      {/* Weekly summary */}
+      {/* Task Stats Bento */}
+      <TaskStatsBento
+        todo={todoCount}
+        inProgress={inProgressCount}
+        done={doneCount}
+        total={totalCount}
+      />
+
+      {/* Weekly journal summary */}
       <JournalSummary />
 
       {/* Tabs: Tasks and Journal */}

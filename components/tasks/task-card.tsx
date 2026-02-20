@@ -58,7 +58,7 @@ export function TaskCard({
   return (
     <div
       className={cn(
-        'group rounded-lg border bg-card p-3 transition-shadow hover:shadow-md',
+        'group rounded-xl border border-border/50 bg-card p-3 task-card-warm dark:glass-card',
         isDone && 'opacity-60'
       )}
     >

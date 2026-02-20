@@ -53,7 +53,7 @@ export function JournalSummary() {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:grid-rows-2">
       {/* Osiągnięte cele — large card spanning 2 rows */}
-      <div className="sm:row-span-2 rounded-2xl border border-border/50 bg-card p-5 dark:glass-card">
+      <div className="sm:row-span-2 rounded-2xl border border-border/50 bg-card p-5 dark:glass-card glass-card-light">
         <div className="flex items-center gap-2 mb-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-green-500/10">
             <Trophy className="h-4 w-4 text-green-500" />
@@ -85,7 +85,7 @@ export function JournalSummary() {
       </div>
 
       {/* Do poprawy */}
-      <div className="rounded-2xl border border-border/50 bg-card p-5 dark:glass-card">
+      <div className="rounded-2xl border border-border/50 bg-card p-5 dark:glass-card glass-card-light">
         <div className="flex items-center gap-2 mb-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
             <TrendingUp className="h-4 w-4 text-primary" />
@@ -117,7 +117,7 @@ export function JournalSummary() {
       </div>
 
       {/* Streak / Notatki */}
-      <div className="rounded-2xl border border-border/50 bg-card p-5 dark:glass-card">
+      <div className="rounded-2xl border border-border/50 bg-card p-5 dark:glass-card glass-card-light">
         <div className="flex items-center gap-2 mb-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted">
             <StickyNote className="h-4 w-4 text-muted-foreground" />

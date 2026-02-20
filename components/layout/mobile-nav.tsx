@@ -1,142 +1,90 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { CheckSquare, Users, Settings, LogOut, Menu, X, Plus } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
+import { Home, Users, CalendarDays, BookOpen, Settings, CheckSquare } from 'lucide-react'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import type { Workspace } from '@/lib/types'
 
 interface MobileNavProps {
   workspaces: Workspace[]
   userName: string
+  avatarUrl?: string | null
 }
 
-export function MobileNav({ workspaces, userName }: MobileNavProps) {
-  const [open, setOpen] = useState(false)
-  const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClient()
+const tabs = [
+  { href: '/private', label: 'Pulpit', icon: Home },
+  { href: '/coworking', label: 'Coworking', icon: Users },
+  { href: '/private', label: 'Kalendarz', icon: CalendarDays, query: '?view=month' },
+  { href: '/private', label: 'Dziennik', icon: BookOpen, query: '?tab=journal' },
+  { href: '/settings', label: 'Ustawienia', icon: Settings },
+]
 
-  async function handleLogout() {
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
+export function MobileNav({ workspaces, userName, avatarUrl }: MobileNavProps) {
+  const pathname = usePathname()
+
+  const initials = userName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U'
+
+  function isActive(href: string) {
+    if (href === '/private') return pathname === '/private'
+    if (href === '/coworking') return pathname.startsWith('/coworking')
+    if (href === '/settings') return pathname === '/settings'
+    return false
   }
 
   return (
     <>
-      {/* Top bar — glass effect */}
-      <div className="flex h-14 items-center justify-between border-b border-border/50 bg-background/80 backdrop-blur-lg px-4 lg:hidden">
+      {/* Top bar — minimal with avatar */}
+      <div className="flex h-12 items-center justify-between border-b border-border/50 bg-background/80 backdrop-blur-lg px-4 lg:hidden">
         <Link href="/private" className="flex items-center gap-2 font-bold">
           <CheckSquare className="h-5 w-5 text-primary" />
           <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
             TaskFlow
           </span>
         </Link>
-        <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+
+        <Avatar className="h-8 w-8 border border-border/50">
+          {avatarUrl && <AvatarImage src={avatarUrl} alt={userName} />}
+          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
       </div>
 
-      {/* Mobile overlay */}
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-72 bg-background/95 backdrop-blur-xl shadow-2xl border-r border-border/50">
-            <div className="flex h-14 items-center border-b border-border/50 px-4">
-              <span className="font-bold">Menu</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="ml-auto"
-                onClick={() => setOpen(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-
-            <nav className="space-y-1 p-3">
+      {/* Bottom tab bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+        <nav
+          className="glass-bottom-bar flex items-center justify-around px-1"
+          style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
+        >
+          {tabs.map((tab) => {
+            const active = isActive(tab.href)
+            const Icon = tab.icon
+            return (
               <Link
-                href="/private"
-                onClick={() => setOpen(false)}
+                key={tab.label}
+                href={tab.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors',
-                  pathname === '/private'
-                    ? 'bg-primary/10 text-primary font-medium'
-                    : 'hover:bg-accent/50'
+                  'relative flex flex-col items-center gap-0.5 py-2 px-2 text-[10px] font-medium transition-colors',
+                  active ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
-                <CheckSquare className="h-4 w-4" />
-                Prywatne
+                <Icon className="h-5 w-5" />
+                <span>{tab.label}</span>
+                {active && (
+                  <span className="absolute bottom-1 h-0.5 w-5 rounded-full bg-primary" />
+                )}
               </Link>
-
-              <div className="pt-3">
-                <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Coworking
-                </p>
-                <div className="mt-1 space-y-1">
-                  {workspaces.map((ws) => (
-                    <Link
-                      key={ws.id}
-                      href={`/coworking/${ws.id}`}
-                      onClick={() => setOpen(false)}
-                      className={cn(
-                        'flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm transition-colors',
-                        pathname.startsWith(`/coworking/${ws.id}`)
-                          ? 'bg-primary/10 text-primary font-medium'
-                          : 'text-muted-foreground hover:bg-accent/50'
-                      )}
-                    >
-                      {ws.name}
-                    </Link>
-                  ))}
-                  <Link
-                    href="/coworking"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent/50"
-                  >
-                    <Plus className="h-3 w-3" />
-                    Nowy workspace
-                  </Link>
-                </div>
-              </div>
-
-              <div className="pt-3">
-                <Link
-                  href="/settings"
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors',
-                    pathname === '/settings'
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'hover:bg-accent/50'
-                  )}
-                >
-                  <Settings className="h-4 w-4" />
-                  Ustawienia
-                </Link>
-              </div>
-            </nav>
-
-            <div className="absolute bottom-0 left-0 right-0 border-t border-border/50 p-3">
-              <div className="flex items-center justify-between">
-                <span className="truncate text-sm font-medium">{userName}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLogout}
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+            )
+          })}
+        </nav>
+      </div>
     </>
   )
 }

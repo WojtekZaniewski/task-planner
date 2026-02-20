@@ -72,7 +72,7 @@ export function TaskCalendarMonth({
       </div>
 
       {/* Calendar grid */}
-      <div className="rounded-lg border">
+      <div className="rounded-xl border border-border/50 overflow-hidden">
         {/* Week day headers */}
         <div className="grid grid-cols-7 border-b">
           {weekDays.map((day) => (
@@ -99,7 +99,7 @@ export function TaskCalendarMonth({
                 className={cn(
                   'flex min-h-[80px] flex-col border-b border-r p-1.5 text-left transition-colors hover:bg-accent/50',
                   !isCurrentMonth && 'bg-muted/30 text-muted-foreground',
-                  isToday(day) && 'bg-primary/5'
+                  isToday(day) && 'bg-primary/10 ring-1 ring-primary/20'
                 )}
               >
                 <span

@@ -22,7 +22,7 @@ export default async function DashboardLayout({
   // Fetch user profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, app_mode, theme, onboarding_completed')
+    .select('full_name, avatar_url, app_mode, theme, onboarding_completed')
     .eq('id', user.id)
     .single()
 
@@ -43,21 +43,27 @@ export default async function DashboardLayout({
 
   const userName = profile?.full_name ?? user.email ?? 'Użytkownik'
   const appMode = profile?.app_mode ?? 'calendar'
+  const avatarUrl = profile?.avatar_url ?? null
 
   return (
-    <div className="flex h-screen" data-app-mode={appMode}>
+    <div
+      className="flex h-screen"
+      data-app-mode={appMode}
+      data-user-name={userName}
+      data-avatar-url={avatarUrl ?? ''}
+    >
       {/* Desktop sidebar */}
       <div className="hidden lg:block">
-        <Sidebar workspaces={workspaces} userName={userName} />
+        <Sidebar workspaces={workspaces} userName={userName} avatarUrl={avatarUrl} />
       </div>
 
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Mobile nav */}
-        <MobileNav workspaces={workspaces} userName={userName} />
+        <MobileNav workspaces={workspaces} userName={userName} avatarUrl={avatarUrl} />
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-6">
           {children}
         </main>
       </div>
