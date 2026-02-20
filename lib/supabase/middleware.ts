@@ -56,7 +56,7 @@ export async function updateSession(request: NextRequest) {
       .eq('id', user.id)
       .single()
 
-    if (profile && profile.onboarding_completed === false) {
+    if (profile && !profile.onboarding_completed) {
       const url = request.nextUrl.clone()
       url.pathname = '/onboarding'
       return NextResponse.redirect(url)
