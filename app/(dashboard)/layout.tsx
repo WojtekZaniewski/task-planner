@@ -26,6 +26,11 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single()
 
+  // Redirect to onboarding if not completed
+  if (profile && !profile.onboarding_completed) {
+    redirect('/onboarding')
+  }
+
   // Fetch user's workspaces
   const { data: memberships } = await supabase
     .from('workspace_members')

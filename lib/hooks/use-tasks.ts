@@ -19,7 +19,7 @@ export function useTasks({ workspaceId, isPrivate }: UseTasksOptions) {
   const fetchTasks = useCallback(async () => {
     let query = supabase
       .from('tasks')
-      .select('*, assigned_profile:profiles!tasks_assigned_to_fkey(id, full_name, avatar_url), creator_profile:profiles!tasks_created_by_fkey(id, full_name, avatar_url)')
+      .select('*')
       .order('position', { ascending: true })
       .order('created_at', { ascending: false })
 
