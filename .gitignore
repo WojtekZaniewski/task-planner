@@ -33,8 +33,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# serwist
-public/sw.js
+# serwist (auto-generated)
 public/sw.js.map
 public/swe-worker-*.js
 

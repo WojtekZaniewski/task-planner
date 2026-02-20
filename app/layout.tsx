@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
+import { ServiceWorkerRegister } from '@/components/pwa/sw-register'
+import { InstallPrompt } from '@/components/pwa/install-prompt'
 import './globals.css'
 
 const inter = Inter({
@@ -12,7 +14,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'TaskFlow - Planner zadań',
   description: 'Planner zadań dla Twojego zespołu. Organizuj, planuj i współpracuj.',
-  manifest: '/manifest.json',
+  manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -41,6 +43,8 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
           <Toaster position="bottom-right" richColors />
+          <ServiceWorkerRegister />
+          <InstallPrompt />
         </ThemeProvider>
       </body>
     </html>
