@@ -59,7 +59,7 @@ export function JournalSummary() {
             <Trophy className="h-4 w-4 text-green-500" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">Osiągnięte cele</h3>
+            <h3 className="text-sm font-medium">Osiągnięte cele</h3>
             {achievedGoals.length > 0 && (
               <p className="text-xs text-muted-foreground">{achievedGoals.length} w tym tygodniu</p>
             )}
@@ -91,7 +91,7 @@ export function JournalSummary() {
             <TrendingUp className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">Do poprawy</h3>
+            <h3 className="text-sm font-medium">Do poprawy</h3>
             {improvements.length > 0 && (
               <p className="text-xs text-muted-foreground">{improvements.length} w tym tygodniu</p>
             )}
@@ -123,7 +123,7 @@ export function JournalSummary() {
             <StickyNote className="h-4 w-4 text-muted-foreground" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">Notatki</h3>
+            <h3 className="text-sm font-medium">Notatki</h3>
             {notes.length > 0 && (
               <p className="text-xs text-muted-foreground">{notes.length} w tym tygodniu</p>
             )}
@@ -156,7 +156,7 @@ export function JournalSummary() {
               <Flame className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-semibold">Podsumowanie tygodnia</p>
+              <p className="text-sm font-medium">Podsumowanie tygodnia</p>
               <p className="text-xs text-muted-foreground">
                 {entries.length} {entries.length === 1 ? 'wpis' : entries.length < 5 ? 'wpisy' : 'wpisów'} w dzienniku
               </p>
@@ -164,15 +164,15 @@ export function JournalSummary() {
           </div>
           <div className="flex gap-4 text-center">
             <div>
-              <p className="text-lg font-bold text-green-500">{achievedGoals.length}</p>
+              <p className="text-lg font-semibold text-green-500">{achievedGoals.length}</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Cele</p>
             </div>
             <div>
-              <p className="text-lg font-bold text-primary">{improvements.length}</p>
+              <p className="text-lg font-semibold text-primary">{improvements.length}</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Poprawy</p>
             </div>
             <div>
-              <p className="text-lg font-bold">{notes.length}</p>
+              <p className="text-lg font-semibold">{notes.length}</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Notatki</p>
             </div>
           </div>

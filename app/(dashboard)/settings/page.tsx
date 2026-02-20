@@ -130,7 +130,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Ustawienia</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">Ustawienia</h1>
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Profil */}
@@ -271,7 +271,7 @@ export default function SettingsPage() {
               >
                 <div className="flex items-center gap-3 mb-1">
                   <CheckSquare className="h-5 w-5 text-primary" />
-                  <span className="font-semibold">Lista zadań</span>
+                  <span className="font-medium">Lista zadań</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Kalendarz dzienny i tygodniowy. Zadania jako rutyny do odhaczenia.
@@ -289,7 +289,7 @@ export default function SettingsPage() {
               >
                 <div className="flex items-center gap-3 mb-1">
                   <CalendarDays className="h-5 w-5 text-primary" />
-                  <span className="font-semibold">Kalendarz</span>
+                  <span className="font-medium">Kalendarz</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Lista, Kanban, Dzień, Tydzień, Miesiąc. Pełne opcje planowania.

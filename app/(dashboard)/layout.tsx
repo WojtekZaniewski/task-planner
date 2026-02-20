@@ -51,6 +51,7 @@ export default async function DashboardLayout({
       data-app-mode={appMode}
       data-user-name={userName}
       data-avatar-url={avatarUrl ?? ''}
+      data-workspace-count={workspaces.length}
     >
       {/* Desktop sidebar */}
       <div className="hidden lg:block">

@@ -114,7 +114,7 @@ export default function CoworkingPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Coworking</h1>
+          <h1 className="text-2xl font-semibold">Coworking</h1>
           <p className="text-sm text-muted-foreground">
             Wspólne przestrzenie robocze
           </p>

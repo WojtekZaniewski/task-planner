@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Plus, CheckSquare, BookOpen } from 'lucide-react'
 import { useTasks } from '@/lib/hooks/use-tasks'
 import { useAppStore } from '@/lib/store'
@@ -17,6 +16,7 @@ import { TaskCalendarMonth } from '@/components/tasks/task-calendar-month'
 import { JournalSection } from '@/components/journal/journal-section'
 import { JournalSummary } from '@/components/journal/journal-summary'
 import { TaskStatsBento } from '@/components/dashboard/task-stats-bento'
+import { DashboardBento } from '@/components/dashboard/dashboard-bento'
 import type { Task, AppMode } from '@/lib/types'
 
 export default function PrivatePage() {
@@ -25,6 +25,7 @@ export default function PrivatePage() {
     appMode, setAppMode,
     userName, setUserName,
     avatarUrl, setAvatarUrl,
+    workspaceCount, setWorkspaceCount,
   } = useAppStore()
   const { tasks, loading, createTask, updateTask, deleteTask, changeStatus } =
     useTasks({ isPrivate: true })
@@ -48,6 +49,8 @@ export default function PrivatePage() {
       }
       if (name) setUserName(name)
       if (avatar) setAvatarUrl(avatar)
+      const wsCount = parseInt(container.getAttribute('data-workspace-count') || '0', 10)
+      setWorkspaceCount(wsCount)
     }
   }, [])
 
@@ -98,25 +101,14 @@ export default function PrivatePage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      {/* Greeting Header */}
-      <div className="flex items-center gap-4">
-        <Avatar className="h-12 w-12 border-2 border-primary/20">
-          {avatarUrl && <AvatarImage src={avatarUrl} alt={userName} />}
-          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-            Cześć, {firstName}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {todoCount === 0
-              ? 'Wszystkie zadania zrobione!'
-              : `Masz ${todoCount} ${todoCount === 1 ? 'zadanie' : todoCount < 5 ? 'zadania' : 'zadań'} do zrobienia`}
-          </p>
-        </div>
-      </div>
+      {/* Dashboard Bento Hub */}
+      <DashboardBento
+        firstName={firstName}
+        avatarUrl={avatarUrl}
+        initials={initials}
+        todoCount={todoCount}
+        workspaceCount={workspaceCount}
+      />
 
       {/* Task Stats Bento */}
       <TaskStatsBento

@@ -75,7 +75,7 @@ export function TaskCard({
           <div className="flex items-start justify-between gap-2">
             <h3
               className={cn(
-                'text-sm font-medium',
+                'text-sm font-normal',
                 isDone && 'line-through text-muted-foreground'
               )}
             >
