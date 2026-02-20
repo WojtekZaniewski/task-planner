@@ -119,7 +119,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
   }
 
   return (
-    <Card className="w-full max-w-lg">
+    <Card className="w-full max-w-lg dark:glass-card dark:border-border/50">
       {/* Progress bar */}
       <div className="px-6 pt-6">
         <div className="flex gap-1.5">
@@ -142,7 +142,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
       {step === 0 && (
         <>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <User className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-xl">Jak masz na imię?</CardTitle>
@@ -164,7 +164,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
       {step === 1 && (
         <>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Calendar className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-xl">Ile masz lat?</CardTitle>
@@ -189,7 +189,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
       {step === 2 && (
         <>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Target className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-xl">Co chciałbyś poprawić?</CardTitle>
@@ -202,7 +202,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
                   key={goal.id}
                   onClick={() => toggleGoal(goal.id)}
                   className={cn(
-                    'flex items-center gap-3 rounded-lg border p-3 text-left transition-colors',
+                    'flex items-center gap-3 rounded-xl border p-3 text-left transition-colors',
                     goals.includes(goal.id)
                       ? 'border-primary bg-primary/5 text-foreground'
                       : 'border-border hover:bg-muted'
@@ -224,7 +224,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
       {step === 3 && (
         <>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Briefcase className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-xl">Jak najlepiej opisujesz swoją rolę?</CardTitle>
@@ -258,7 +258,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
       {step === 4 && (
         <>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Layout className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-xl">Jaki tryb aplikacji preferujesz?</CardTitle>
@@ -309,7 +309,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
       {step === 5 && (
         <>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Palette className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-xl">Jaki wygląd preferujesz?</CardTitle>

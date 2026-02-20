@@ -130,7 +130,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
-      <h1 className="text-2xl font-bold">Ustawienia</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Ustawienia</h1>
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Profil */}
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={() => setRole(r.id)}
                     className={cn(
-                      'rounded-lg border p-2 text-sm font-medium transition-colors',
+                      'rounded-xl border p-2 text-sm font-medium transition-colors',
                       role === r.id
                         ? 'border-primary bg-primary/5 text-foreground'
                         : 'border-border hover:bg-muted'
@@ -202,7 +202,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => toggleGoal(goal.id)}
                   className={cn(
-                    'flex items-center gap-3 rounded-lg border p-3 text-left transition-colors',
+                    'flex items-center gap-3 rounded-xl border p-3 text-left transition-colors',
                     goals.includes(goal.id)
                       ? 'border-primary bg-primary/5 text-foreground'
                       : 'border-border hover:bg-muted'

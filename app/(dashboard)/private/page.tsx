@@ -76,7 +76,7 @@ export default function PrivatePage() {
     <div className="mx-auto max-w-6xl space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Prywatne</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Prywatne</h1>
         <p className="text-sm text-muted-foreground">
           Twoje osobiste zadania, cele i dziennik
         </p>

@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Planner zadań dla Twojego zespołu',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f8f8f8',
-    theme_color: '#3b82f6',
+    background_color: '#0A0A0A',
+    theme_color: '#F97316',
     orientation: 'any',
     icons: [
       {

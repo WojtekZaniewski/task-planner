@@ -35,12 +35,14 @@ export function Sidebar({ workspaces, userName }: SidebarProps) {
   }
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r bg-sidebar">
+    <aside className="flex h-full w-64 flex-col border-r border-sidebar-border bg-sidebar dark:glass-sidebar">
       {/* Logo */}
-      <div className="flex h-14 items-center border-b px-4">
-        <Link href="/private" className="flex items-center gap-2 font-semibold">
-          <CheckSquare className="h-5 w-5 text-sidebar-primary" />
-          <span className="text-sidebar-foreground">TaskFlow</span>
+      <div className="flex h-14 items-center border-b border-sidebar-border px-4">
+        <Link href="/private" className="flex items-center gap-2 font-bold">
+          <CheckSquare className="h-5 w-5 text-primary" />
+          <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+            TaskFlow
+          </span>
         </Link>
       </div>
 
@@ -50,9 +52,9 @@ export function Sidebar({ workspaces, userName }: SidebarProps) {
         <Link
           href="/private"
           className={cn(
-            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+            'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors',
             pathname === '/private'
-              ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+              ? 'bg-primary/10 text-primary font-medium'
               : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
           )}
         >
@@ -64,7 +66,7 @@ export function Sidebar({ workspaces, userName }: SidebarProps) {
         <div className="pt-4">
           <button
             onClick={() => setWorkspacesOpen(!workspacesOpen)}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
           >
             <Users className="h-4 w-4" />
             <span className="flex-1 text-left">Coworking</span>
@@ -83,9 +85,9 @@ export function Sidebar({ workspaces, userName }: SidebarProps) {
                   key={ws.id}
                   href={`/coworking/${ws.id}`}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors',
+                    'flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm transition-colors',
                     pathname.startsWith(`/coworking/${ws.id}`)
-                      ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+                      ? 'bg-primary/10 text-primary font-medium'
                       : 'text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                   )}
                 >
@@ -94,7 +96,7 @@ export function Sidebar({ workspaces, userName }: SidebarProps) {
               ))}
               <Link
                 href="/coworking"
-                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+                className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
               >
                 <Plus className="h-3 w-3" />
                 <span>Nowy workspace</span>
@@ -108,9 +110,9 @@ export function Sidebar({ workspaces, userName }: SidebarProps) {
           <Link
             href="/settings"
             className={cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+              'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors',
               pathname === '/settings'
-                ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+                ? 'bg-primary/10 text-primary font-medium'
                 : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
             )}
           >
@@ -121,7 +123,7 @@ export function Sidebar({ workspaces, userName }: SidebarProps) {
       </nav>
 
       {/* User section */}
-      <div className="border-t p-3">
+      <div className="border-t border-sidebar-border p-3">
         <div className="flex items-center justify-between">
           <span className="truncate text-sm font-medium text-sidebar-foreground">
             {userName}
