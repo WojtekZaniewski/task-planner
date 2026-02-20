@@ -3,11 +3,19 @@ export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent'
 export type ThoughtType = 'thought' | 'goal' | 'achievement'
 export type WorkspaceRole = 'owner' | 'admin' | 'member'
 export type CalendarView = 'list' | 'kanban' | 'day' | 'week' | 'month'
+export type AppMode = 'tasks' | 'calendar'
+export type ThemePreference = 'light' | 'dark' | 'system'
 
 export interface Profile {
   id: string
   full_name: string
   avatar_url: string | null
+  age: number | null
+  goals: string[] | null
+  role: string | null
+  app_mode: AppMode
+  theme: ThemePreference
+  onboarding_completed: boolean
   created_at: string
 }
 

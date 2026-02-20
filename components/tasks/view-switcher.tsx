@@ -3,9 +3,9 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { List, Columns3, CalendarDays, CalendarRange, Calendar } from 'lucide-react'
-import type { CalendarView } from '@/lib/types'
+import type { AppMode, CalendarView } from '@/lib/types'
 
-const views: { value: CalendarView; label: string; icon: React.ElementType }[] = [
+const allViews: { value: CalendarView; label: string; icon: React.ElementType }[] = [
   { value: 'list', label: 'Lista', icon: List },
   { value: 'kanban', label: 'Kanban', icon: Columns3 },
   { value: 'day', label: 'Dzień', icon: CalendarDays },
@@ -13,12 +13,19 @@ const views: { value: CalendarView; label: string; icon: React.ElementType }[] =
   { value: 'month', label: 'Miesiąc', icon: Calendar },
 ]
 
+const taskModeViews: CalendarView[] = ['day', 'week']
+
 interface ViewSwitcherProps {
   currentView: CalendarView
   onViewChange: (view: CalendarView) => void
+  appMode?: AppMode
 }
 
-export function ViewSwitcher({ currentView, onViewChange }: ViewSwitcherProps) {
+export function ViewSwitcher({ currentView, onViewChange, appMode = 'calendar' }: ViewSwitcherProps) {
+  const views = appMode === 'tasks'
+    ? allViews.filter((v) => taskModeViews.includes(v.value))
+    : allViews
+
   return (
     <div className="flex items-center gap-1 rounded-lg border bg-muted p-1">
       {views.map(({ value, label, icon: Icon }) => (

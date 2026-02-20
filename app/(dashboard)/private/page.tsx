@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { useTasks } from '@/lib/hooks/use-tasks'
@@ -12,16 +12,31 @@ import { TaskKanbanView } from '@/components/tasks/task-kanban-view'
 import { TaskCalendarDay } from '@/components/tasks/task-calendar-day'
 import { TaskCalendarWeek } from '@/components/tasks/task-calendar-week'
 import { TaskCalendarMonth } from '@/components/tasks/task-calendar-month'
-import type { Task, CalendarView } from '@/lib/types'
+import type { Task, AppMode } from '@/lib/types'
 
 export default function PrivatePage() {
-  const { currentView, setCurrentView } = useAppStore()
+  const { currentView, setCurrentView, appMode, setAppMode } = useAppStore()
   const { tasks, loading, createTask, updateTask, deleteTask, changeStatus } =
     useTasks({ isPrivate: true })
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
+
+  // Read app_mode from DOM data attribute set by server layout
+  useEffect(() => {
+    const container = document.querySelector('[data-app-mode]')
+    if (container) {
+      const mode = container.getAttribute('data-app-mode') as AppMode
+      if (mode) {
+        setAppMode(mode)
+        // Set default view based on mode
+        if (mode === 'tasks' && !['day', 'week'].includes(currentView)) {
+          setCurrentView('day')
+        }
+      }
+    }
+  }, [])
 
   function handleEdit(task: Task) {
     setEditingTask(task)
@@ -68,6 +83,7 @@ export default function PrivatePage() {
           <ViewSwitcher
             currentView={currentView}
             onViewChange={setCurrentView}
+            appMode={appMode}
           />
           <Button onClick={() => setFormOpen(true)}>
             <Plus className="h-4 w-4" />
@@ -77,7 +93,7 @@ export default function PrivatePage() {
       </div>
 
       {/* Views */}
-      {currentView === 'list' && (
+      {currentView === 'list' && appMode === 'calendar' && (
         <TaskListView
           tasks={tasks}
           onEdit={handleEdit}
@@ -86,7 +102,7 @@ export default function PrivatePage() {
         />
       )}
 
-      {currentView === 'kanban' && (
+      {currentView === 'kanban' && appMode === 'calendar' && (
         <TaskKanbanView
           tasks={tasks}
           onEdit={handleEdit}
@@ -117,7 +133,7 @@ export default function PrivatePage() {
         />
       )}
 
-      {currentView === 'month' && (
+      {currentView === 'month' && appMode === 'calendar' && (
         <TaskCalendarMonth
           tasks={tasks}
           selectedDate={selectedDate}

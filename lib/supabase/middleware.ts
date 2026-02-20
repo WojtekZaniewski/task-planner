@@ -33,11 +33,14 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const pathname = request.nextUrl.pathname
+
   // Protected routes - redirect to login if not authenticated
   const isProtectedRoute =
-    request.nextUrl.pathname.startsWith('/private') ||
-    request.nextUrl.pathname.startsWith('/coworking') ||
-    request.nextUrl.pathname.startsWith('/settings')
+    pathname.startsWith('/private') ||
+    pathname.startsWith('/coworking') ||
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/onboarding')
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
@@ -45,10 +48,25 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Check onboarding status for logged-in users
+  if (user && !pathname.startsWith('/api/auth') && !pathname.startsWith('/onboarding')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', user.id)
+      .single()
+
+    if (profile && profile.onboarding_completed === false) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/onboarding'
+      return NextResponse.redirect(url)
+    }
+  }
+
   // Redirect logged-in users away from auth pages
   const isAuthRoute =
-    request.nextUrl.pathname === '/login' ||
-    request.nextUrl.pathname === '/register'
+    pathname === '/login' ||
+    pathname === '/register'
 
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone()
@@ -57,7 +75,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Redirect root to /private if logged in
-  if (user && request.nextUrl.pathname === '/') {
+  if (user && pathname === '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/private'
     return NextResponse.redirect(url)
