@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-sans)', 'Montserrat', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Molde Semi Expanded', 'sans-serif'],
         display: ['var(--font-display)', 'Bogart', 'serif'],
       },
       colors: {

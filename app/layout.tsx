@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import { Montserrat } from 'next/font/google'
 import localFont from 'next/font/local'
 import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -8,10 +7,21 @@ import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { SplashScreen } from '@/components/splash-screen'
 import './globals.css'
 
-const montserrat = Montserrat({
-  subsets: ['latin', 'latin-ext'],
+const molde = localFont({
+  src: [
+    {
+      path: '../public/fonts/Molde-SemiExpanded-RegularReverse.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/Molde-SemiExpanded-RegularReverse.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
   variable: '--font-sans',
-  weight: '700',
+  display: 'swap',
 })
 
 const bogart = localFont({
@@ -59,7 +69,7 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className={`${montserrat.variable} ${bogart.variable} font-sans`}>
+      <body className={`${molde.variable} ${bogart.variable} font-sans`}>
         <ThemeProvider>
           <SplashScreen />
           {children}
