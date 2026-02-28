@@ -83,7 +83,7 @@ export default function WorkspaceDashboard() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold">{workspace.name}</h1>
+          <h1 className="text-2xl font-display">{workspace.name}</h1>
           {workspace.description && (
             <p className="text-sm text-muted-foreground">
               {workspace.description}

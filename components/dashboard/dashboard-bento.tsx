@@ -68,7 +68,7 @@ export function DashboardBento({
           </AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-display font-semibold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-display tracking-tight">
             cześć, {firstName}
           </h1>
           <p className="text-sm font-light text-muted-foreground">

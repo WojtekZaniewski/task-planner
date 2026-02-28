@@ -126,7 +126,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
-      <h1 className="text-3xl font-display font-semibold tracking-tight">ustawienia</h1>
+      <h1 className="text-3xl font-display tracking-tight">ustawienia</h1>
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Profil */}

@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ServiceWorkerRegister } from '@/components/pwa/sw-register'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
+import { SplashScreen } from '@/components/splash-screen'
 import './globals.css'
 
 const montserrat = Montserrat({
@@ -60,6 +61,7 @@ export default function RootLayout({
       </head>
       <body className={`${montserrat.variable} ${bogart.variable} font-sans`}>
         <ThemeProvider>
+          <SplashScreen />
           {children}
           <Toaster position="bottom-right" richColors />
           <ServiceWorkerRegister />
