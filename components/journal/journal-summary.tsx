@@ -55,8 +55,8 @@ export function JournalSummary() {
       {/* Osiągnięte cele — large card spanning 2 rows */}
       <div className="sm:row-span-2 rounded-2xl border border-border/50 bg-card p-5 dark:glass-card glass-card-light">
         <div className="flex items-center gap-2 mb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-green-500/10">
-            <Trophy className="h-4 w-4 text-green-500" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-500/10">
+            <Trophy className="h-4 w-4 text-orange-500" />
           </div>
           <div>
             <h3 className="text-sm font-medium">Osiągnięte cele</h3>
@@ -71,7 +71,7 @@ export function JournalSummary() {
           <ul className="space-y-2">
             {achievedGoals.slice(0, 5).map((entry) => (
               <li key={entry.id} className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />
                 <span className="text-sm line-clamp-2">{entry.content}</span>
               </li>
             ))}
@@ -164,7 +164,7 @@ export function JournalSummary() {
           </div>
           <div className="flex gap-4 text-center">
             <div>
-              <p className="text-lg font-semibold text-green-500">{achievedGoals.length}</p>
+              <p className="text-lg font-semibold text-orange-500">{achievedGoals.length}</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Cele</p>
             </div>
             <div>

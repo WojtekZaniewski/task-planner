@@ -5,17 +5,13 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   CheckSquare,
-  Users,
   Settings,
   LogOut,
-  Plus,
-  ChevronDown,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import type { Workspace } from '@/lib/types'
-import { useState } from 'react'
 
 interface SidebarProps {
   workspaces: Workspace[]
@@ -27,7 +23,6 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
-  const [workspacesOpen, setWorkspacesOpen] = useState(true)
 
   // Hide sidebar on hub page
   if (pathname === '/private') return null
@@ -44,7 +39,7 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
       <div className="flex h-14 items-center border-b border-sidebar-border px-4">
         <Link href="/private" className="flex items-center gap-2 font-bold">
           <CheckSquare className="h-5 w-5 text-primary" />
-          <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+          <span className="font-display bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
             tasks
           </span>
         </Link>
@@ -52,9 +47,8 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {/* Private section */}
         <Link
-          href="/private"
+          href="/private/tasks"
           className={cn(
             'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors',
             pathname.startsWith('/private')
@@ -63,53 +57,9 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
           )}
         >
           <CheckSquare className="h-4 w-4" />
-          Pulpit
+          zadania
         </Link>
 
-        {/* Coworking section */}
-        <div className="pt-4">
-          <button
-            onClick={() => setWorkspacesOpen(!workspacesOpen)}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
-          >
-            <Users className="h-4 w-4" />
-            <span className="flex-1 text-left">Coworking</span>
-            <ChevronDown
-              className={cn(
-                'h-4 w-4 transition-transform',
-                workspacesOpen && 'rotate-180'
-              )}
-            />
-          </button>
-
-          {workspacesOpen && (
-            <div className="ml-4 mt-1 space-y-1">
-              {workspaces.map((ws) => (
-                <Link
-                  key={ws.id}
-                  href={`/coworking/${ws.id}`}
-                  className={cn(
-                    'flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm transition-colors',
-                    pathname.startsWith(`/coworking/${ws.id}`)
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
-                  )}
-                >
-                  <span className="truncate">{ws.name}</span>
-                </Link>
-              ))}
-              <Link
-                href="/coworking"
-                className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
-              >
-                <Plus className="h-3 w-3" />
-                <span>Nowy workspace</span>
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Settings */}
         <div className="pt-4">
           <Link
             href="/settings"
@@ -121,7 +71,7 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
             )}
           >
             <Settings className="h-4 w-4" />
-            Ustawienia
+            konto
           </Link>
         </div>
       </nav>

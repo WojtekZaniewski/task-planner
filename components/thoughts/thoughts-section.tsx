@@ -23,9 +23,9 @@ const typeConfig: Record<
   ThoughtType,
   { label: string; icon: React.ElementType; color: string }
 > = {
-  thought: { label: 'Przemyślenie', icon: Lightbulb, color: 'bg-yellow-100 text-yellow-700' },
-  goal: { label: 'Cel', icon: Target, color: 'bg-blue-100 text-blue-700' },
-  achievement: { label: 'Osiągnięcie', icon: Trophy, color: 'bg-green-100 text-green-700' },
+  thought: { label: 'Przemyślenie', icon: Lightbulb, color: 'bg-orange-50 text-orange-400 dark:bg-orange-950 dark:text-orange-400' },
+  goal: { label: 'Cel', icon: Target, color: 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-400' },
+  achievement: { label: 'Osiągnięcie', icon: Trophy, color: 'bg-orange-200 text-orange-700 dark:bg-orange-800 dark:text-orange-300' },
 }
 
 interface ThoughtsSectionProps {

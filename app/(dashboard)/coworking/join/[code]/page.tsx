@@ -122,11 +122,11 @@ export default function JoinWorkspacePage() {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           )}
           {status === 'success' && (
-            <CheckCircle className="h-8 w-8 text-green-500" />
+            <CheckCircle className="h-8 w-8 text-orange-500" />
           )}
           {status === 'already_member' && (
             <>
-              <CheckCircle className="h-8 w-8 text-blue-500" />
+              <CheckCircle className="h-8 w-8 text-orange-500" />
               <p className="text-sm text-muted-foreground">Przekierowuję...</p>
             </>
           )}

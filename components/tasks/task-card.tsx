@@ -17,10 +17,10 @@ import { format } from 'date-fns'
 import { pl } from 'date-fns/locale'
 
 const priorityColors: Record<string, string> = {
-  low: 'bg-gray-100 text-gray-600',
-  medium: 'bg-blue-100 text-blue-700',
-  high: 'bg-orange-100 text-orange-700',
-  urgent: 'bg-red-100 text-red-700',
+  low: 'bg-orange-50 text-orange-400 dark:bg-orange-950 dark:text-orange-400',
+  medium: 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-400',
+  high: 'bg-orange-200 text-orange-700 dark:bg-orange-800 dark:text-orange-300',
+  urgent: 'bg-orange-300 text-orange-900 dark:bg-orange-700 dark:text-orange-100',
 }
 
 const priorityLabels: Record<string, string> = {

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, Users, CalendarDays, BookOpen, Settings, CheckSquare } from 'lucide-react'
+import { CheckSquare, Settings } from 'lucide-react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import type { Workspace } from '@/lib/types'
 
@@ -14,11 +14,8 @@ interface MobileNavProps {
 }
 
 const tabs = [
-  { href: '/private', label: 'Pulpit', icon: Home },
-  { href: '/coworking', label: 'Coworking', icon: Users },
-  { href: '/private/tasks', label: 'Zadania', icon: CalendarDays },
-  { href: '/private/journal', label: 'Dziennik', icon: BookOpen },
-  { href: '/settings', label: 'Ustawienia', icon: Settings },
+  { href: '/private/tasks', label: 'zadania', icon: CheckSquare },
+  { href: '/settings', label: 'konto', icon: Settings },
 ]
 
 export function MobileNav({ workspaces, userName, avatarUrl }: MobileNavProps) {
@@ -35,10 +32,7 @@ export function MobileNav({ workspaces, userName, avatarUrl }: MobileNavProps) {
     .slice(0, 2) || 'U'
 
   function isActive(href: string) {
-    if (href === '/private') return pathname === '/private'
-    if (href === '/private/tasks') return pathname === '/private/tasks'
-    if (href === '/private/journal') return pathname === '/private/journal'
-    if (href === '/coworking') return pathname.startsWith('/coworking')
+    if (href === '/private/tasks') return pathname.startsWith('/private/tasks')
     if (href === '/settings') return pathname === '/settings'
     return false
   }
@@ -49,7 +43,7 @@ export function MobileNav({ workspaces, userName, avatarUrl }: MobileNavProps) {
       <div className="flex h-12 items-center justify-between border-b border-border/50 bg-background/80 backdrop-blur-lg px-4 lg:hidden">
         <Link href="/private" className="flex items-center gap-2 font-bold">
           <CheckSquare className="h-5 w-5 text-primary" />
-          <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+          <span className="font-display bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
             tasks
           </span>
         </Link>

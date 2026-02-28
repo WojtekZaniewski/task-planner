@@ -15,18 +15,15 @@ import {
   Calendar,
   Target,
   Briefcase,
-  Layout,
   Palette,
   Sun,
   Moon,
   Monitor,
-  CheckSquare,
-  CalendarDays,
   Loader2,
   Sparkles,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { AppMode, ThemePreference } from '@/lib/types'
+import type { ThemePreference } from '@/lib/types'
 
 const GOALS = [
   { id: 'productivity', label: 'Produktywność', icon: '⚡' },
@@ -62,10 +59,9 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
   const [age, setAge] = useState('')
   const [goals, setGoals] = useState<string[]>([])
   const [role, setRole] = useState('')
-  const [appMode, setAppMode] = useState<AppMode>('calendar')
   const [theme, setThemeChoice] = useState<ThemePreference>('system')
 
-  const totalSteps = 6
+  const totalSteps = 5
 
   function toggleGoal(goalId: string) {
     setGoals((prev) =>
@@ -90,7 +86,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
         age: age ? parseInt(age) : null,
         goals: goals.length > 0 ? goals : null,
         role: role || null,
-        app_mode: appMode,
+        app_mode: 'tasks',
         theme,
         onboarding_completed: true,
       })
@@ -112,8 +108,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
       case 1: return true // age is optional
       case 2: return true // goals are optional
       case 3: return true // role is optional
-      case 4: return true // app_mode has default
-      case 5: return true // theme has default
+      case 4: return true // theme has default
       default: return true
     }
   }
@@ -145,7 +140,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <User className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-xl">Jak masz na imię?</CardTitle>
+            <CardTitle className="text-xl font-display">Jak masz na imię?</CardTitle>
             <CardDescription>Będziemy się tak do Ciebie zwracać</CardDescription>
           </CardHeader>
           <CardContent>
@@ -167,7 +162,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Calendar className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-xl">Ile masz lat?</CardTitle>
+            <CardTitle className="text-xl font-display">Ile masz lat?</CardTitle>
             <CardDescription>Opcjonalne - pomoże nam dostosować treści</CardDescription>
           </CardHeader>
           <CardContent>
@@ -192,7 +187,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Target className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-xl">Co chciałbyś poprawić?</CardTitle>
+            <CardTitle className="text-xl font-display">Co chciałbyś poprawić?</CardTitle>
             <CardDescription>Wybierz dowolną liczbę celów</CardDescription>
           </CardHeader>
           <CardContent>
@@ -227,7 +222,7 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Briefcase className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-xl">Jak najlepiej opisujesz swoją rolę?</CardTitle>
+            <CardTitle className="text-xl font-display">Jak najlepiej opisujesz swoją rolę?</CardTitle>
             <CardDescription>To pomoże nam dostosować interfejs</CardDescription>
           </CardHeader>
           <CardContent>
@@ -254,65 +249,14 @@ export function OnboardingWizard({ userId, initialName }: OnboardingWizardProps)
         </>
       )}
 
-      {/* Step 5: App Mode */}
+      {/* Step 5: Theme */}
       {step === 4 && (
-        <>
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
-              <Layout className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-xl">Jaki tryb aplikacji preferujesz?</CardTitle>
-            <CardDescription>Możesz zmienić to później w ustawieniach</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-3">
-              <button
-                onClick={() => setAppMode('tasks')}
-                className={cn(
-                  'rounded-xl border-2 p-4 text-left transition-colors',
-                  appMode === 'tasks'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-muted'
-                )}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <CheckSquare className="h-5 w-5 text-primary" />
-                  <span className="font-semibold">Lista zadań</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Prosty tryb z kalendarzem dziennym i tygodniowym. Zadania jako rutyny do odhaczenia - bez wymagania godziny.
-                </p>
-              </button>
-              <button
-                onClick={() => setAppMode('calendar')}
-                className={cn(
-                  'rounded-xl border-2 p-4 text-left transition-colors',
-                  appMode === 'calendar'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-muted'
-                )}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <CalendarDays className="h-5 w-5 text-primary" />
-                  <span className="font-semibold">Kalendarz</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Pełny planner z widokami: Lista, Kanban, Dzień, Tydzień, Miesiąc. Więcej opcji organizacji zadań.
-                </p>
-              </button>
-            </div>
-          </CardContent>
-        </>
-      )}
-
-      {/* Step 6: Theme */}
-      {step === 5 && (
         <>
           <CardHeader className="text-center">
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
               <Palette className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-xl">Jaki wygląd preferujesz?</CardTitle>
+            <CardTitle className="text-xl font-display">Jaki wygląd preferujesz?</CardTitle>
             <CardDescription>Motyw zmieni się od razu</CardDescription>
           </CardHeader>
           <CardContent>

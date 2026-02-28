@@ -1,12 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { CheckSquare, Users, BookOpen, Settings } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { CheckSquare, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DashboardBentoProps {
@@ -20,7 +18,7 @@ interface DashboardBentoProps {
 const tiles = [
   {
     key: 'private',
-    label: 'Sekcja prywatna',
+    label: 'zadania',
     icon: CheckSquare,
     glow: 'glow-orange',
     iconBg: 'bg-orange-500/10',
@@ -28,30 +26,12 @@ const tiles = [
     href: '/private/tasks',
   },
   {
-    key: 'workspace',
-    label: 'Workspace',
-    icon: Users,
-    glow: 'glow-blue',
-    iconBg: 'bg-blue-500/10',
-    iconColor: 'text-blue-500',
-    href: '/coworking',
-  },
-  {
-    key: 'notebook',
-    label: 'Notatnik',
-    icon: BookOpen,
-    glow: 'glow-green',
-    iconBg: 'bg-green-500/10',
-    iconColor: 'text-green-500',
-    href: '/private/journal',
-  },
-  {
     key: 'profile',
-    label: 'Profil',
+    label: 'konto',
     icon: Settings,
-    glow: 'glow-purple',
-    iconBg: 'bg-purple-500/10',
-    iconColor: 'text-purple-500',
+    glow: 'glow-orange',
+    iconBg: 'bg-orange-500/10',
+    iconColor: 'text-orange-500',
     href: '/settings',
   },
 ] as const
@@ -61,43 +41,17 @@ export function DashboardBento({
   avatarUrl,
   initials,
   todoCount,
-  workspaceCount,
 }: DashboardBentoProps) {
-  const [lastEntry, setLastEntry] = useState<string | null>(null)
-  const supabase = createClient()
-
-  useEffect(() => {
-    async function fetchLastEntry() {
-      const { data } = await supabase
-        .from('journal_entries')
-        .select('content')
-        .is('workspace_id', null)
-        .order('created_at', { ascending: false })
-        .limit(1)
-
-      if (data && data.length > 0) {
-        setLastEntry(data[0].content)
-      }
-    }
-    fetchLastEntry()
-  }, [supabase])
-
   const today = format(new Date(), "EEEE, d MMMM", { locale: pl })
 
   function getDescription(key: string) {
     switch (key) {
       case 'private':
         return todoCount === 0
-          ? 'Wszystko zrobione!'
+          ? 'wszystko zrobione!'
           : `${todoCount} ${todoCount === 1 ? 'zadanie' : todoCount < 5 ? 'zadania' : 'zadań'} do zrobienia`
-      case 'workspace':
-        return workspaceCount === 0
-          ? 'Utwórz pierwszy workspace'
-          : `${workspaceCount} ${workspaceCount === 1 ? 'workspace' : 'workspace\'ów'}`
-      case 'notebook':
-        return lastEntry || 'Brak wpisów — zacznij pisać!'
       case 'profile':
-        return 'Ustawienia konta'
+        return 'ustawienia konta'
       default:
         return ''
     }
@@ -114,17 +68,17 @@ export function DashboardBento({
           </AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            Cześć, {firstName}
+          <h1 className="text-2xl sm:text-3xl font-display font-semibold tracking-tight">
+            cześć, {firstName}
           </h1>
-          <p className="text-sm font-light text-muted-foreground capitalize">
+          <p className="text-sm font-light text-muted-foreground">
             {today}
           </p>
         </div>
       </div>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3">
         {tiles.map((tile) => {
           const Icon = tile.icon
           return (

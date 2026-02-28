@@ -4,24 +4,20 @@ import { useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { DashboardBento } from '@/components/dashboard/dashboard-bento'
 import { useTasks } from '@/lib/hooks/use-tasks'
-import type { AppMode } from '@/lib/types'
 
 export default function PrivatePage() {
   const {
     userName, setUserName,
     avatarUrl, setAvatarUrl,
     workspaceCount, setWorkspaceCount,
-    setAppMode,
   } = useAppStore()
   const { tasks } = useTasks({ isPrivate: true })
 
   useEffect(() => {
-    const container = document.querySelector('[data-app-mode]')
+    const container = document.querySelector('[data-user-name]')
     if (container) {
-      const mode = container.getAttribute('data-app-mode') as AppMode
       const name = container.getAttribute('data-user-name') || ''
       const avatar = container.getAttribute('data-avatar-url') || null
-      if (mode) setAppMode(mode)
       if (name) setUserName(name)
       if (avatar) setAvatarUrl(avatar)
       const wsCount = parseInt(container.getAttribute('data-workspace-count') || '0', 10)

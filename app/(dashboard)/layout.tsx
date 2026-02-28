@@ -22,7 +22,7 @@ export default async function DashboardLayout({
   // Fetch user profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, avatar_url, app_mode, theme, onboarding_completed')
+    .select('full_name, avatar_url, theme, onboarding_completed')
     .eq('id', user.id)
     .single()
 
@@ -42,13 +42,11 @@ export default async function DashboardLayout({
     .filter(Boolean)
 
   const userName = profile?.full_name ?? user.email ?? 'Użytkownik'
-  const appMode = profile?.app_mode ?? 'calendar'
   const avatarUrl = profile?.avatar_url ?? null
 
   return (
     <div
       className="flex h-screen"
-      data-app-mode={appMode}
       data-user-name={userName}
       data-avatar-url={avatarUrl ?? ''}
       data-workspace-count={workspaces.length}

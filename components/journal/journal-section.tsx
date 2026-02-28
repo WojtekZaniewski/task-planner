@@ -22,9 +22,9 @@ const typeConfig: Record<
   JournalEntryType,
   { label: string; icon: React.ElementType; color: string }
 > = {
-  note: { label: 'Notatka', icon: StickyNote, color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' },
-  achieved_goal: { label: 'Osiągnięty cel', icon: Trophy, color: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' },
-  improvement: { label: 'Do poprawy', icon: TrendingUp, color: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300' },
+  note: { label: 'Notatka', icon: StickyNote, color: 'bg-orange-50 text-orange-400 dark:bg-orange-950 dark:text-orange-400' },
+  achieved_goal: { label: 'Osiągnięty cel', icon: Trophy, color: 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-400' },
+  improvement: { label: 'Do poprawy', icon: TrendingUp, color: 'bg-orange-200 text-orange-700 dark:bg-orange-800 dark:text-orange-300' },
 }
 
 interface JournalSectionProps {

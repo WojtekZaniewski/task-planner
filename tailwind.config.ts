@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'Montserrat', 'sans-serif'],
+        display: ['var(--font-display)', 'Bogart', 'serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

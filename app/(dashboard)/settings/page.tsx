@@ -15,11 +15,9 @@ import {
   Sun,
   Moon,
   Monitor,
-  CheckSquare,
-  CalendarDays,
   Save,
 } from 'lucide-react'
-import type { AppMode, ThemePreference } from '@/lib/types'
+import type { ThemePreference } from '@/lib/types'
 
 const GOALS = [
   { id: 'productivity', label: 'Produktywność', icon: '⚡' },
@@ -43,7 +41,6 @@ export default function SettingsPage() {
   const [age, setAge] = useState('')
   const [goals, setGoals] = useState<string[]>([])
   const [role, setRole] = useState('')
-  const [appMode, setAppMode] = useState<AppMode>('calendar')
   const [themeChoice, setThemeChoice] = useState<ThemePreference>('system')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -60,7 +57,7 @@ export default function SettingsPage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, age, goals, role, app_mode, theme')
+        .select('full_name, age, goals, role, theme')
         .eq('id', user.id)
         .single()
 
@@ -69,7 +66,6 @@ export default function SettingsPage() {
         setAge(profile.age?.toString() || '')
         setGoals(profile.goals || [])
         setRole(profile.role || '')
-        setAppMode(profile.app_mode || 'calendar')
         setThemeChoice(profile.theme || 'system')
       }
       setLoading(false)
@@ -105,7 +101,7 @@ export default function SettingsPage() {
         age: age ? parseInt(age) : null,
         goals: goals.length > 0 ? goals : null,
         role: role || null,
-        app_mode: appMode,
+        app_mode: 'tasks',
         theme: themeChoice,
       })
       .eq('id', user.id)
@@ -130,7 +126,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Ustawienia</h1>
+      <h1 className="text-3xl font-display font-semibold tracking-tight">ustawienia</h1>
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Profil */}
@@ -247,54 +243,6 @@ export default function SettingsPage() {
                   <span className="text-sm font-medium">{label}</span>
                 </button>
               ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tryb aplikacji */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Tryb aplikacji</CardTitle>
-            <CardDescription>Jak chcesz korzystać z tasks</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-3">
-              <button
-                type="button"
-                onClick={() => setAppMode('tasks')}
-                className={cn(
-                  'rounded-xl border-2 p-4 text-left transition-colors',
-                  appMode === 'tasks'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-muted'
-                )}
-              >
-                <div className="flex items-center gap-3 mb-1">
-                  <CheckSquare className="h-5 w-5 text-primary" />
-                  <span className="font-medium">Lista zadań</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Kalendarz dzienny i tygodniowy. Zadania jako rutyny do odhaczenia.
-                </p>
-              </button>
-              <button
-                type="button"
-                onClick={() => setAppMode('calendar')}
-                className={cn(
-                  'rounded-xl border-2 p-4 text-left transition-colors',
-                  appMode === 'calendar'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-muted'
-                )}
-              >
-                <div className="flex items-center gap-3 mb-1">
-                  <CalendarDays className="h-5 w-5 text-primary" />
-                  <span className="font-medium">Kalendarz</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Lista, Kanban, Dzień, Tydzień, Miesiąc. Pełne opcje planowania.
-                </p>
-              </button>
             </div>
           </CardContent>
         </Card>
