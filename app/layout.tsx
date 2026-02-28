@@ -9,7 +9,7 @@ import './globals.css'
 const montserrat = Montserrat({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-sans',
-  weight: ['200', '300', '400', '500', '600', '700', '800'],
+  weight: '700',
 })
 
 export const metadata: Metadata = {
