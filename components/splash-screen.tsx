@@ -12,24 +12,24 @@ export function SplashScreen() {
     setVisible(true)
     sessionStorage.setItem('splash-shown', 'true')
 
-    // Fallback: force dismiss after 6s if video doesn't end
-    const timeout = setTimeout(() => dismiss(), 6000)
+    // Fallback: force dismiss after 7s if video doesn't end
+    const timeout = setTimeout(() => dismiss(), 7000)
     return () => clearTimeout(timeout)
   }, [])
 
   function dismiss() {
     setFading(true)
-    setTimeout(() => setVisible(false), 500)
+    setTimeout(() => setVisible(false), 800)
   }
 
   if (!visible) return null
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+      className="fixed inset-0 z-[9999] bg-black"
       style={{
         opacity: fading ? 0 : 1,
-        transition: 'opacity 500ms ease-out',
+        transition: 'opacity 800ms cubic-bezier(0.4, 0, 0.2, 1)',
         pointerEvents: fading ? 'none' : 'auto',
       }}
     >
@@ -41,7 +41,7 @@ export function SplashScreen() {
         playsInline
         onEnded={dismiss}
         onError={dismiss}
-        className="h-48 w-48 sm:h-64 sm:w-64 object-contain"
+        className="h-full w-full object-cover"
       />
     </div>
   )
