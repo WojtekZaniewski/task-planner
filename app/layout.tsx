@@ -13,13 +13,13 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'TaskFlow - Planner zadań',
+  title: 'tasks',
   description: 'Planner zadań dla Twojego zespołu. Organizuj, planuj i współpracuj.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'TaskFlow',
+    title: 'tasks',
   },
 }
 

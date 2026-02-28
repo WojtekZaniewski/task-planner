@@ -255,7 +255,7 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Tryb aplikacji</CardTitle>
-            <CardDescription>Jak chcesz korzystać z TaskFlow</CardDescription>
+            <CardDescription>Jak chcesz korzystać z tasks</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-3">

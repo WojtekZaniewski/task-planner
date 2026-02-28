@@ -1,5 +1,5 @@
 -- =============================================
--- TaskFlow - Initial Database Schema
+-- tasks - Initial Database Schema
 -- Run this in Supabase SQL Editor
 -- =============================================
 

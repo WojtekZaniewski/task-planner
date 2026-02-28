@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'TaskFlow - Planner zadań',
-    short_name: 'TaskFlow',
+    name: 'tasks',
+    short_name: 'tasks',
     description: 'Planner zadań dla Twojego zespołu',
     start_url: '/',
     display: 'standalone',

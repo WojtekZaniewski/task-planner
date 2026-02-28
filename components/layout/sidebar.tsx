@@ -45,7 +45,7 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
         <Link href="/private" className="flex items-center gap-2 font-bold">
           <CheckSquare className="h-5 w-5 text-primary" />
           <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
-            TaskFlow
+            tasks
           </span>
         </Link>
       </div>

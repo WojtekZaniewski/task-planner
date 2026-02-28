@@ -57,7 +57,7 @@ export default function LoginPage() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">TaskFlow</CardTitle>
+        <CardTitle className="text-2xl">tasks</CardTitle>
         <CardDescription>Zaloguj się do swojego konta</CardDescription>
       </CardHeader>
       <CardContent>

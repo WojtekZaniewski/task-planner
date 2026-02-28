@@ -50,7 +50,7 @@ export default function RegisterPage() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">TaskFlow</CardTitle>
+        <CardTitle className="text-2xl">tasks</CardTitle>
         <CardDescription>Utwórz nowe konto</CardDescription>
       </CardHeader>
       <CardContent>
