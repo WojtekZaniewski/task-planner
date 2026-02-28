@@ -165,15 +165,15 @@ export function JournalSummary() {
           <div className="flex gap-4 text-center">
             <div>
               <p className="text-lg font-semibold text-orange-500">{achievedGoals.length}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Cele</p>
+              <p className="text-[10px] text-muted-foreground tracking-wider">Cele</p>
             </div>
             <div>
               <p className="text-lg font-semibold text-primary">{improvements.length}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Poprawy</p>
+              <p className="text-[10px] text-muted-foreground tracking-wider">Poprawy</p>
             </div>
             <div>
               <p className="text-lg font-semibold">{notes.length}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Notatki</p>
+              <p className="text-[10px] text-muted-foreground tracking-wider">Notatki</p>
             </div>
           </div>
         </div>

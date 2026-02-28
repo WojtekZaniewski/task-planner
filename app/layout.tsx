@@ -27,13 +27,13 @@ const molde = localFont({
 const bogart = localFont({
   src: [
     {
-      path: '../public/fonts/Bogart-Semibold.ttf',
-      weight: '600',
+      path: '../public/fonts/Bogart-Regular.ttf',
+      weight: '400',
       style: 'normal',
     },
     {
-      path: '../public/fonts/Bogart-Bold.ttf',
-      weight: '700',
+      path: '../public/fonts/Bogart-Medium.ttf',
+      weight: '500',
       style: 'normal',
     },
   ],

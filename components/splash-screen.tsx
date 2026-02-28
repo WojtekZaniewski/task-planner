@@ -3,13 +3,11 @@
 import { useState, useEffect, useRef } from 'react'
 
 export function SplashScreen() {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(true)
   const [fading, setFading] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    setVisible(true)
-
     // Fallback: force dismiss after 7s if video doesn't end
     const timeout = setTimeout(() => dismiss(), 7000)
     return () => clearTimeout(timeout)

@@ -71,7 +71,7 @@ export function TaskStatsBento({ todo, inProgress, done, total }: TaskStatsBento
         >
           <div className="flex items-center gap-2 mb-2">
             <stat.icon className={cn('h-4 w-4', stat.iconColor)} />
-            <span className="text-xs text-muted-foreground font-display uppercase tracking-wider">
+            <span className="text-xs text-muted-foreground font-display tracking-wider">
               {stat.label}
             </span>
           </div>
