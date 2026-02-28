@@ -10,12 +10,12 @@ import './globals.css'
 const molde = localFont({
   src: [
     {
-      path: '../public/fonts/Molde-SemiExpanded-RegularReverse.woff2',
+      path: '../public/fonts/Molde-SemiExpanded-Regular.woff2',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../public/fonts/Molde-SemiExpanded-RegularReverse.ttf',
+      path: '../public/fonts/Molde-SemiExpanded-Regular.ttf',
       weight: '400',
       style: 'normal',
     },

@@ -8,9 +8,7 @@ export function SplashScreen() {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    if (sessionStorage.getItem('splash-shown')) return
     setVisible(true)
-    sessionStorage.setItem('splash-shown', 'true')
 
     // Fallback: force dismiss after 7s if video doesn't end
     const timeout = setTimeout(() => dismiss(), 7000)
