@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { format } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { CheckSquare, Users, BookOpen, Settings, Wrench } from 'lucide-react'
+import { CheckSquare, Users, BookOpen, Settings } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -44,15 +44,6 @@ const tiles = [
     iconBg: 'bg-green-500/10',
     iconColor: 'text-green-500',
     href: '/private/journal',
-  },
-  {
-    key: 'tools',
-    label: 'Narzedzia',
-    icon: Wrench,
-    glow: 'glow-teal',
-    iconBg: 'bg-teal-500/10',
-    iconColor: 'text-teal-500',
-    href: '/private/tools',
   },
   {
     key: 'profile',
@@ -105,8 +96,6 @@ export function DashboardBento({
           : `${workspaceCount} ${workspaceCount === 1 ? 'workspace' : 'workspace\'ów'}`
       case 'notebook':
         return lastEntry || 'Brak wpisów — zacznij pisać!'
-      case 'tools':
-        return '3 narzedzia analityczne'
       case 'profile':
         return 'Ustawienia konta'
       default:

@@ -10,7 +10,6 @@ import {
   LogOut,
   Plus,
   ChevronDown,
-  Wrench,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -65,20 +64,6 @@ export function Sidebar({ workspaces, userName, avatarUrl }: SidebarProps) {
         >
           <CheckSquare className="h-4 w-4" />
           Pulpit
-        </Link>
-
-        {/* Tools section */}
-        <Link
-          href="/private/tools"
-          className={cn(
-            'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors',
-            pathname.startsWith('/private/tools')
-              ? 'bg-primary/10 text-primary font-medium'
-              : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
-          )}
-        >
-          <Wrench className="h-4 w-4" />
-          Narzedzia
         </Link>
 
         {/* Coworking section */}

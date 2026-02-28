@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from 'next'
-import { Unbounded } from 'next/font/google'
+import { Montserrat } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ServiceWorkerRegister } from '@/components/pwa/sw-register'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import './globals.css'
 
-const unbounded = Unbounded({
+const montserrat = Montserrat({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-sans',
   weight: ['200', '300', '400', '500', '600', '700', '800'],
@@ -40,7 +40,7 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className={`${unbounded.variable} font-sans`}>
+      <body className={`${montserrat.variable} font-sans`}>
         <ThemeProvider>
           {children}
           <Toaster position="bottom-right" richColors />

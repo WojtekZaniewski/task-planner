@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-sans)', 'Unbounded', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Montserrat', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
