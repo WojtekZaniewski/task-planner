@@ -144,6 +144,9 @@
   .glow-purple::before {
     background: radial-gradient(ellipse at 50% 100%, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
   }
+  .glow-teal::before {
+    background: radial-gradient(ellipse at 50% 100%, rgba(20, 184, 166, 0.15) 0%, transparent 70%);
+  }
 
   /* Glass bottom tab bar */
   .glass-bottom-bar {
