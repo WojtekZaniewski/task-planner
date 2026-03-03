@@ -31,7 +31,7 @@ export function SplashScreen() {
     >
       <video
         ref={videoRef}
-        src="/videos/splash.mp4"
+        src="/videos/splash.mp4?v=2"
         autoPlay
         muted
         playsInline
