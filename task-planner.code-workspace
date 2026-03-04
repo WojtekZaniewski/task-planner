@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "task-planner",
+			"path": "."
+		},
+		{
+			"name": "claude-cookbooks-main",
+			"path": "../Downloads/claude-cookbooks-main"
+		}
+	],
+	"settings": {}
+}

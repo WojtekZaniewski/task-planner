@@ -1,7 +1,6 @@
 'use client'
 
 import { GlassCard } from '@/components/dashboard/glass-card'
-import { useAppStore } from '@/lib/store'
 import { format } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import { CalendarDays } from 'lucide-react'
@@ -12,8 +11,6 @@ interface HeroTileProps {
 }
 
 export function HeroTile({ todoCount, doneToday }: HeroTileProps) {
-  const userName = useAppStore((s) => s.userName)
-  const firstName = userName.split(' ')[0] || 'Hej'
   const today = format(new Date(), "EEEE, d MMMM", { locale: pl })
 
   return (
@@ -24,8 +21,8 @@ export function HeroTile({ todoCount, doneToday }: HeroTileProps) {
           <span>{today}</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-bold text-foreground leading-tight">
-          Cześć,<br />
-          <span className="text-primary">{firstName}</span>
+          Twoje<br />
+          <span className="text-primary">zadania</span>
         </h1>
       </div>
 
