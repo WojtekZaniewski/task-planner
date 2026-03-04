@@ -3,7 +3,6 @@
 import { useTasks } from '@/lib/hooks/use-tasks'
 import { BentoGrid } from '@/components/dashboard/bento-grid'
 import { HeroTile } from '@/components/dashboard/tiles/hero-tile'
-import { TodaysTasksTile } from '@/components/dashboard/tiles/todays-tasks-tile'
 import { QuickAddTile } from '@/components/dashboard/tiles/quick-add-tile'
 import { FeaturedTile } from '@/components/dashboard/tiles/featured-tile'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -17,16 +16,13 @@ export default function DashboardPage() {
         <Skeleton className="rounded-bento bento-hero" />
         <Skeleton className="rounded-bento bento-tall" />
         <Skeleton className="rounded-bento bento-1x1" />
-        <Skeleton className="rounded-bento bento-wide" />
       </div>
     )
   }
 
-  const today = new Date().toISOString().split('T')[0]
-  const todaysTasks = tasks.filter(t => t.due_date === today && t.status !== 'done')
+  const activeTasks = tasks.filter(t => t.status !== 'done')
   const doneTasks = tasks.filter(t => t.status === 'done')
-  const nextTask = tasks
-    .filter(t => t.status !== 'done')
+  const nextTask = activeTasks
     .sort((a, b) => (a.due_date || '').localeCompare(b.due_date || ''))
     [0] || null
 
@@ -35,7 +31,6 @@ export default function DashboardPage() {
       <HeroTile total={tasks.length} done={doneTasks.length} />
       <QuickAddTile onAdd={createTask} />
       <FeaturedTile task={nextTask} />
-      <TodaysTasksTile tasks={todaysTasks} onStatusChange={changeStatus} />
     </BentoGrid>
   )
 }
