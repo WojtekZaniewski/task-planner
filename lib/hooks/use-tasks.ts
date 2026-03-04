@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import type { Task, TaskStatus, TaskPriority } from '@/lib/types'
-import { toast } from 'sonner'
 
 export interface TaskFormData {
   title: string
@@ -14,110 +12,97 @@ export interface TaskFormData {
   due_time?: string
 }
 
+const STORAGE_KEY = 'task-planner-tasks'
+
+function loadTasks(): Task[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+function saveTasks(tasks: Task[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
+}
+
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
-
-  const fetchTasks = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .is('workspace_id', null)
-      .order('position', { ascending: true })
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      toast.error('Nie udało się pobrać zadań')
-      console.error(error)
-    } else {
-      setTasks(data ?? [])
-    }
-    setLoading(false)
-  }, [supabase])
 
   useEffect(() => {
-    fetchTasks()
-  }, [fetchTasks])
+    setTasks(loadTasks())
+    setLoading(false)
+  }, [])
 
   const createTask = useCallback(
     async (data: TaskFormData) => {
-      // Try to get user, but don't require it
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      const { error } = await supabase.from('tasks').insert({
+      const now = new Date().toISOString()
+      const newTask: Task = {
+        id: crypto.randomUUID(),
         title: data.title,
         description: data.description || null,
         status: data.status,
         priority: data.priority,
         due_date: data.due_date || null,
         due_time: data.due_time || null,
-        workspace_id: null,
-        created_by: user?.id ?? '00000000-0000-0000-0000-000000000000',
-      })
-
-      if (error) {
-        toast.error('Nie udało się utworzyć zadania')
-        console.error(error)
-        throw error
+        created_by: 'local',
+        position: 0,
+        created_at: now,
+        updated_at: now,
       }
 
-      toast.success('Zadanie utworzone')
-      fetchTasks()
+      setTasks(prev => {
+        const updated = [newTask, ...prev]
+        saveTasks(updated)
+        return updated
+      })
     },
-    [supabase, fetchTasks]
+    []
   )
 
   const updateTask = useCallback(
     async (taskId: string, data: Partial<TaskFormData>) => {
-      const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
-
-      if (data.title !== undefined) updates.title = data.title
-      if (data.description !== undefined) updates.description = data.description || null
-      if (data.status !== undefined) updates.status = data.status
-      if (data.priority !== undefined) updates.priority = data.priority
-      if (data.due_date !== undefined) updates.due_date = data.due_date || null
-      if (data.due_time !== undefined) updates.due_time = data.due_time || null
-
-      const { error } = await supabase
-        .from('tasks')
-        .update(updates)
-        .eq('id', taskId)
-
-      if (error) {
-        toast.error('Nie udało się zaktualizować zadania')
-        console.error(error)
-        throw error
-      }
-
-      fetchTasks()
+      setTasks(prev => {
+        const updated = prev.map(t => {
+          if (t.id !== taskId) return t
+          return {
+            ...t,
+            ...data,
+            updated_at: new Date().toISOString(),
+          }
+        })
+        saveTasks(updated)
+        return updated
+      })
     },
-    [supabase, fetchTasks]
+    []
   )
 
   const deleteTask = useCallback(
     async (taskId: string) => {
-      const { error } = await supabase.from('tasks').delete().eq('id', taskId)
-
-      if (error) {
-        toast.error('Nie udało się usunąć zadania')
-        console.error(error)
-        throw error
-      }
-
-      toast.success('Zadanie usunięte')
-      fetchTasks()
+      setTasks(prev => {
+        const updated = prev.filter(t => t.id !== taskId)
+        saveTasks(updated)
+        return updated
+      })
     },
-    [supabase, fetchTasks]
+    []
   )
 
   const changeStatus = useCallback(
     async (taskId: string, status: TaskStatus) => {
-      await updateTask(taskId, { status })
+      setTasks(prev => {
+        const updated = prev.map(t =>
+          t.id === taskId ? { ...t, status, updated_at: new Date().toISOString() } : t
+        )
+        saveTasks(updated)
+        return updated
+      })
     },
-    [updateTask]
+    []
   )
 
   return {
@@ -127,6 +112,6 @@ export function useTasks() {
     updateTask,
     deleteTask,
     changeStatus,
-    refresh: fetchTasks,
+    refresh: () => setTasks(loadTasks()),
   }
 }

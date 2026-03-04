@@ -56,7 +56,7 @@ export function HeroTile({ total, done }: HeroTileProps) {
   }
 
   return (
-    <GlassCard className="bento-hero flex flex-col justify-between" hover={false}>
+    <GlassCard className="bento-1x1 flex flex-col justify-between" hover={false}>
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight">

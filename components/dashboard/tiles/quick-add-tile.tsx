@@ -35,7 +35,7 @@ export function QuickAddTile({ onAdd }: QuickAddTileProps) {
   }
 
   return (
-    <GlassCard className="bento-tall flex flex-col">
+    <GlassCard className="bento-1x1 flex flex-col">
       <h2 className="font-semibold text-foreground mb-4">Nowe Zadanie</h2>
 
       <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4">
