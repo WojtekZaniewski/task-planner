@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useCallback } from 'react'
 import { useTasks } from '@/lib/hooks/use-tasks'
 import { BentoGrid } from '@/components/dashboard/bento-grid'
 import { HeroTile } from '@/components/dashboard/tiles/hero-tile'
@@ -8,7 +9,12 @@ import { TaskTile } from '@/components/dashboard/tiles/task-tile'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function DashboardPage() {
-  const { tasks, loading, createTask, changeStatus, deleteTask } = useTasks()
+  const { tasks, loading, createTask, changeStatus } = useTasks()
+  const [missionActive, setMissionActive] = useState(false)
+
+  const handleMissionChange = useCallback((active: boolean) => {
+    setMissionActive(active)
+  }, [])
 
   if (loading) {
     return (
@@ -20,19 +26,17 @@ export default function DashboardPage() {
     )
   }
 
-  const activeTasks = tasks.filter(t => t.status !== 'done')
   const doneTasks = tasks.filter(t => t.status === 'done')
 
   return (
     <BentoGrid>
-      <HeroTile total={tasks.length} done={doneTasks.length} />
-      <QuickAddTile onAdd={createTask} />
-      {activeTasks.map(task => (
+      <HeroTile total={tasks.length} done={doneTasks.length} onMissionChange={handleMissionChange} />
+      <QuickAddTile onAdd={createTask} missionActive={missionActive} />
+      {tasks.map(task => (
         <TaskTile
           key={task.id}
           task={task}
           onStatusChange={changeStatus}
-          onDelete={deleteTask}
         />
       ))}
     </BentoGrid>

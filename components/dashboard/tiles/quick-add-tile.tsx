@@ -3,21 +3,22 @@
 import { useState } from 'react'
 import { GlassCard } from '@/components/dashboard/glass-card'
 import { Input } from '@/components/ui/input'
-import { Send } from 'lucide-react'
+import { Send, Target } from 'lucide-react'
 import type { TaskFormData } from '@/lib/hooks/use-tasks'
 
 interface QuickAddTileProps {
   onAdd: (data: TaskFormData) => Promise<void>
+  missionActive: boolean
 }
 
-export function QuickAddTile({ onAdd }: QuickAddTileProps) {
+export function QuickAddTile({ onAdd, missionActive }: QuickAddTileProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!title.trim() || loading) return
+    if (!title.trim() || loading || !missionActive) return
 
     setLoading(true)
     try {
@@ -32,6 +33,17 @@ export function QuickAddTile({ onAdd }: QuickAddTileProps) {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!missionActive) {
+    return (
+      <GlassCard className="bento-1x1 flex flex-col items-center justify-center gap-3">
+        <Target className="h-8 w-8 text-muted-foreground/40" />
+        <p className="text-sm text-muted-foreground text-center">
+          Najpierw ustaw misję,<br />aby dodawać zadania
+        </p>
+      </GlassCard>
+    )
   }
 
   return (

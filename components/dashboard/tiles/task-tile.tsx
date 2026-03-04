@@ -1,55 +1,55 @@
 'use client'
 
-import { GlassCard } from '@/components/dashboard/glass-card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Trash2 } from 'lucide-react'
+import { Check } from 'lucide-react'
 import type { Task, TaskStatus } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 interface TaskTileProps {
   task: Task
   onStatusChange: (taskId: string, status: TaskStatus) => void
-  onDelete: (taskId: string) => void
 }
 
-export function TaskTile({ task, onStatusChange, onDelete }: TaskTileProps) {
+export function TaskTile({ task, onStatusChange }: TaskTileProps) {
   const isDone = task.status === 'done'
 
+  function handleClick() {
+    onStatusChange(task.id, isDone ? 'todo' : 'done')
+  }
+
   return (
-    <GlassCard className={cn('bento-1x1 flex flex-col justify-between group', isDone && 'opacity-50')}>
-      <div className="flex items-start gap-3">
-        <Checkbox
-          checked={isDone}
-          onCheckedChange={(checked) =>
-            onStatusChange(task.id, checked ? 'done' : 'todo')
-          }
-          className="mt-1 border-primary data-[state=checked]:bg-primary shrink-0"
-        />
-        <div className="flex-1 min-w-0">
-          <p className={cn(
-            'text-sm font-medium leading-snug',
-            isDone && 'line-through text-muted-foreground'
-          )}>
-            {task.title}
-          </p>
-          {task.description && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-              {task.description}
-            </p>
-          )}
-        </div>
+    <div
+      onClick={handleClick}
+      className={cn(
+        'bento-task task-tile glass rounded-bento px-5 py-4 cursor-pointer select-none',
+        'flex items-center gap-4',
+        isDone && 'task-done'
+      )}
+    >
+      <div className={cn(
+        'flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2',
+        isDone
+          ? 'border-white bg-white/20'
+          : 'border-primary/30 bg-transparent'
+      )}>
+        {isDone && <Check className="h-4 w-4 text-white" strokeWidth={3} />}
       </div>
 
-      <div className="flex items-center justify-end mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          type="button"
-          aria-label="Usuń zadanie"
-          onClick={() => onDelete(task.id)}
-          className="glass-button flex h-7 w-7 items-center justify-center rounded-full"
-        >
-          <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-        </button>
+      <div className="flex-1 min-w-0">
+        <p className={cn(
+          'text-sm font-medium leading-snug',
+          isDone ? 'text-white' : 'text-foreground'
+        )}>
+          {task.title}
+        </p>
+        {task.description && (
+          <p className={cn(
+            'text-xs mt-0.5 truncate',
+            isDone ? 'text-white/60' : 'text-muted-foreground'
+          )}>
+            {task.description}
+          </p>
+        )}
       </div>
-    </GlassCard>
+    </div>
   )
 }

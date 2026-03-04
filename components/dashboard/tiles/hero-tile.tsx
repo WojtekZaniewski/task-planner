@@ -3,55 +3,75 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/dashboard/glass-card'
 import { Input } from '@/components/ui/input'
-import { format } from 'date-fns'
+import { format, differenceInDays, parseISO } from 'date-fns'
 import { pl } from 'date-fns/locale'
-import { CalendarDays, Pencil, Save } from 'lucide-react'
+import { CalendarDays, Pencil, Save, Clock, Wallet } from 'lucide-react'
 
 interface HeroTileProps {
   total: number
   done: number
+  onMissionChange?: (active: boolean) => void
 }
 
-const STORAGE_KEY = 'task-planner-mission'
+export const MISSION_STORAGE_KEY = 'task-planner-mission'
 
-interface MissionGoal {
+export interface MissionGoal {
   name: string
   target: number
+  deadline?: string
+  moneyGoal?: number
+  moneyBalance?: number
 }
 
-export function HeroTile({ total, done }: HeroTileProps) {
+export function HeroTile({ total, done, onMissionChange }: HeroTileProps) {
   const today = format(new Date(), "EEEE, d MMMM", { locale: pl })
   const [editing, setEditing] = useState(false)
   const [goal, setGoal] = useState<MissionGoal>({ name: '', target: 0 })
   const [draft, setDraft] = useState<MissionGoal>({ name: '', target: 0 })
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
+    const stored = localStorage.getItem(MISSION_STORAGE_KEY)
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as MissionGoal
         setGoal(parsed)
         setDraft(parsed)
+        onMissionChange?.(!!parsed.name && parsed.target > 0)
       } catch { /* ignore */ }
     }
-  }, [])
+  }, [onMissionChange])
 
-  const hasGoal = goal.name && goal.target > 0
+  const hasGoal = !!(goal.name && goal.target > 0)
   const target = hasGoal ? goal.target : total
   const percentage = target === 0 ? 0 : Math.min(100, Math.round((done / target) * 100))
   const circumference = 2 * Math.PI * 54
   const offset = circumference - (percentage / 100) * circumference
 
+  const daysLeft = goal.deadline
+    ? differenceInDays(parseISO(goal.deadline), new Date())
+    : null
+
+  const moneyMissing = goal.moneyGoal && goal.moneyGoal > 0
+    ? goal.moneyGoal - (goal.moneyBalance || 0)
+    : null
+
   function handleSave() {
     if (!draft.name.trim() || draft.target < 1) return
-    const saved = { name: draft.name.trim(), target: draft.target }
+    const saved: MissionGoal = {
+      name: draft.name.trim(),
+      target: draft.target,
+      deadline: draft.deadline || undefined,
+      moneyGoal: draft.moneyGoal || undefined,
+      moneyBalance: draft.moneyBalance || undefined,
+    }
     setGoal(saved)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved))
+    localStorage.setItem(MISSION_STORAGE_KEY, JSON.stringify(saved))
+    onMissionChange?.(true)
     setEditing(false)
   }
 
   function openEdit() {
-    setDraft(goal.name ? goal : { name: '', target: 10 })
+    setDraft(goal.name ? { ...goal } : { name: '', target: 10 })
     setEditing(true)
   }
 
@@ -80,7 +100,7 @@ export function HeroTile({ total, done }: HeroTileProps) {
       </div>
 
       {editing ? (
-        <div className="flex-1 flex flex-col justify-center gap-4 py-4">
+        <div className="flex-1 flex flex-col justify-center gap-3 py-4 overflow-y-auto">
           <div>
             <label htmlFor="goal-name" className="text-xs text-muted-foreground mb-1.5 block">
               Główny cel:
@@ -107,6 +127,48 @@ export function HeroTile({ total, done }: HeroTileProps) {
               className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
             />
           </div>
+          <div>
+            <label htmlFor="goal-deadline" className="text-xs text-muted-foreground mb-1.5 block">
+              Deadline (opcjonalnie):
+            </label>
+            <Input
+              id="goal-deadline"
+              type="date"
+              value={draft.deadline || ''}
+              onChange={(e) => setDraft(d => ({ ...d, deadline: e.target.value || undefined }))}
+              className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
+            />
+          </div>
+          <div>
+            <label htmlFor="goal-money" className="text-xs text-muted-foreground mb-1.5 block">
+              Cel pieniędzy (opcjonalnie):
+            </label>
+            <Input
+              id="goal-money"
+              type="number"
+              min={0}
+              placeholder="Np. 5000"
+              value={draft.moneyGoal || ''}
+              onChange={(e) => setDraft(d => ({ ...d, moneyGoal: parseInt(e.target.value) || 0 }))}
+              className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
+            />
+          </div>
+          {(draft.moneyGoal ?? 0) > 0 && (
+            <div>
+              <label htmlFor="goal-balance" className="text-xs text-muted-foreground mb-1.5 block">
+                Obecny stan konta:
+              </label>
+              <Input
+                id="goal-balance"
+                type="number"
+                min={0}
+                placeholder="Np. 2000"
+                value={draft.moneyBalance || ''}
+                onChange={(e) => setDraft(d => ({ ...d, moneyBalance: parseInt(e.target.value) || 0 }))}
+                className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
+              />
+            </div>
+          )}
           <button
             type="button"
             onClick={handleSave}
@@ -118,8 +180,8 @@ export function HeroTile({ total, done }: HeroTileProps) {
           </button>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center flex-1 py-6 cursor-pointer" onClick={openEdit}>
-          <div className="relative h-40 w-40 sm:h-48 sm:w-48">
+        <div className="flex flex-col items-center justify-center flex-1 py-4 cursor-pointer" onClick={openEdit}>
+          <div className="relative h-36 w-36 sm:h-44 sm:w-44">
             <svg className="h-full w-full -rotate-90" viewBox="0 0 120 120">
               <circle
                 cx="60" cy="60" r="54"
@@ -139,10 +201,33 @@ export function HeroTile({ total, done }: HeroTileProps) {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl sm:text-6xl font-bold text-foreground">{percentage}%</span>
+              <span className="text-4xl sm:text-5xl font-bold text-foreground">{percentage}%</span>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-3">{done} z {target} ukończonych</p>
+          <p className="text-sm text-muted-foreground mt-2">{done} z {target} ukończonych</p>
+
+          {(daysLeft !== null || moneyMissing !== null) && (
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
+              {daysLeft !== null && (
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground glass-subtle rounded-full px-3 py-1">
+                  <Clock className="h-3 w-3" />
+                  {daysLeft > 0 ? `Pozostało ${daysLeft} dni` : daysLeft === 0 ? 'Dziś deadline!' : `${Math.abs(daysLeft)} dni po terminie`}
+                </span>
+              )}
+              {moneyMissing !== null && moneyMissing > 0 && (
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground glass-subtle rounded-full px-3 py-1">
+                  <Wallet className="h-3 w-3" />
+                  Brakuje {moneyMissing.toLocaleString('pl-PL')} zł
+                </span>
+              )}
+              {moneyMissing !== null && moneyMissing <= 0 && (
+                <span className="flex items-center gap-1.5 text-xs text-primary glass-subtle rounded-full px-3 py-1">
+                  <Wallet className="h-3 w-3" />
+                  Cel osiągnięty!
+                </span>
+              )}
+            </div>
+          )}
         </div>
       )}
 
