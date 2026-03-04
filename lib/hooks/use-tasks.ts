@@ -42,11 +42,10 @@ export function useTasks() {
 
   const createTask = useCallback(
     async (data: TaskFormData) => {
+      // Try to get user, but don't require it
       const {
         data: { user },
       } = await supabase.auth.getUser()
-
-      if (!user) return
 
       const { error } = await supabase.from('tasks').insert({
         title: data.title,
@@ -56,7 +55,7 @@ export function useTasks() {
         due_date: data.due_date || null,
         due_time: data.due_time || null,
         workspace_id: null,
-        created_by: user.id,
+        created_by: user?.id ?? '00000000-0000-0000-0000-000000000000',
       })
 
       if (error) {
