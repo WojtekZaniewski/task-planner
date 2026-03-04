@@ -9,7 +9,7 @@ import { TaskTile } from '@/components/dashboard/tiles/task-tile'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function DashboardPage() {
-  const { tasks, loading, createTask, changeStatus } = useTasks()
+  const { tasks, loading, createTask, changeStatus, deleteTask } = useTasks()
   const [missionActive, setMissionActive] = useState(false)
 
   const handleMissionChange = useCallback((active: boolean) => {
@@ -37,6 +37,7 @@ export default function DashboardPage() {
           key={task.id}
           task={task}
           onStatusChange={changeStatus}
+          onDelete={deleteTask}
         />
       ))}
     </BentoGrid>
