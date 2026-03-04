@@ -4,10 +4,10 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'tasks',
     short_name: 'tasks',
-    description: 'Planner zadań dla Twojego zespołu',
+    description: 'Your personal task planner.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0A0A0A',
+    background_color: '#F8F9FA',
     theme_color: '#F97316',
     orientation: 'any',
     icons: [

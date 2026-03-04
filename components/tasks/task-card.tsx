@@ -1,149 +1,79 @@
 'use client'
 
-import { cn } from '@/lib/utils'
-import type { Task } from '@/lib/types'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Calendar, Clock, MoreHorizontal, Pencil, Trash2, User } from 'lucide-react'
-import { format } from 'date-fns'
+import { Clock, Trash2, Pencil } from 'lucide-react'
+import type { Task, TaskStatus } from '@/lib/types'
+import { cn } from '@/lib/utils'
+import { format, parseISO } from 'date-fns'
 import { pl } from 'date-fns/locale'
-
-const priorityColors: Record<string, string> = {
-  low: 'bg-orange-50 text-orange-400 dark:bg-orange-950 dark:text-orange-400',
-  medium: 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-400',
-  high: 'bg-orange-200 text-orange-700 dark:bg-orange-800 dark:text-orange-300',
-  urgent: 'bg-orange-300 text-orange-900 dark:bg-orange-700 dark:text-orange-100',
-}
-
-const priorityLabels: Record<string, string> = {
-  low: 'Niski',
-  medium: 'Średni',
-  high: 'Wysoki',
-  urgent: 'Pilny',
-}
-
-const statusLabels: Record<string, string> = {
-  todo: 'Do zrobienia',
-  in_progress: 'W trakcie',
-  done: 'Zrobione',
-}
 
 interface TaskCardProps {
   task: Task
+  onStatusChange: (taskId: string, status: TaskStatus) => void
   onEdit: (task: Task) => void
   onDelete: (taskId: string) => void
-  onStatusChange: (taskId: string, status: string) => void
-  showAssignee?: boolean
-  compact?: boolean
 }
 
-export function TaskCard({
-  task,
-  onEdit,
-  onDelete,
-  onStatusChange,
-  showAssignee = false,
-  compact = false,
-}: TaskCardProps) {
+const priorityColors: Record<string, string> = {
+  urgent: 'bg-red-100 text-red-700',
+  high: 'bg-orange-100 text-orange-700',
+  medium: 'bg-amber-100 text-amber-700',
+  low: 'bg-slate-100 text-slate-600',
+}
+
+export function TaskCard({ task, onStatusChange, onEdit, onDelete }: TaskCardProps) {
   const isDone = task.status === 'done'
 
   return (
-    <div
-      className={cn(
-        'group rounded-xl border border-border/50 bg-card p-3 task-card-warm dark:glass-card',
-        isDone && 'opacity-60'
-      )}
-    >
+    <div className={cn(
+      'glass rounded-lg p-4 transition-all duration-200 group',
+      'glass-hover glow-orange',
+      isDone && 'opacity-60'
+    )}>
       <div className="flex items-start gap-3">
         <Checkbox
           checked={isDone}
-          onCheckedChange={(checked) => {
+          onCheckedChange={(checked) =>
             onStatusChange(task.id, checked ? 'done' : 'todo')
-          }}
-          className="mt-0.5"
+          }
+          className="mt-1 border-primary data-[state=checked]:bg-primary"
         />
-
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <h3
-              className={cn(
-                'text-sm font-normal',
-                isDone && 'line-through text-muted-foreground'
-              )}
-            >
-              {task.title}
-            </h3>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onEdit(task)}>
-                  <Pencil className="h-4 w-4" />
-                  Edytuj
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => onDelete(task.id)}
-                  className="text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Usuń
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {!compact && task.description && (
-            <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+          <p className={cn('font-medium', isDone && 'line-through text-muted-foreground')}>
+            {task.title}
+          </p>
+          {task.description && (
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
               {task.description}
             </p>
           )}
-
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <Badge
-              variant="secondary"
-              className={cn('text-xs', priorityColors[task.priority])}
-            >
-              {priorityLabels[task.priority]}
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <Badge variant="secondary" className={cn('text-[10px] px-1.5 py-0', priorityColors[task.priority])}>
+              {task.priority}
             </Badge>
-
+            {task.status === 'in_progress' && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-blue-100 text-blue-700">
+                w trakcie
+              </Badge>
+            )}
             {task.due_date && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                {format(new Date(task.due_date), 'd MMM', { locale: pl })}
-              </span>
-            )}
-
-            {task.due_time && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                 <Clock className="h-3 w-3" />
-                {task.due_time.slice(0, 5)}
-              </span>
-            )}
-
-            {showAssignee && task.assigned_profile && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <User className="h-3 w-3" />
-                {task.assigned_profile.full_name}
+                {format(parseISO(task.due_date), 'd MMM', { locale: pl })}
+                {task.due_time && ` ${task.due_time}`}
               </span>
             )}
           </div>
+        </div>
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(task)}>
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(task.id)}>
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
         </div>
       </div>
     </div>

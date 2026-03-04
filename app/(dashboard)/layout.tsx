@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { Sidebar } from '@/components/layout/sidebar'
-import { MobileNav } from '@/components/layout/mobile-nav'
+import { DashboardHeader } from '@/components/layout/dashboard-header'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,61 +10,26 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     redirect('/login')
   }
 
-  // Fetch user profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, avatar_url, theme, onboarding_completed')
+    .select('full_name')
     .eq('id', user.id)
     .single()
 
-  // Redirect to onboarding if profile missing or not completed
-  if (!profile || !profile.onboarding_completed) {
-    redirect('/onboarding')
-  }
-
-  // Fetch user's workspaces
-  const { data: memberships } = await supabase
-    .from('workspace_members')
-    .select('workspace_id, workspaces(id, name, description, owner_id, created_at)')
-    .eq('user_id', user.id)
-
-  const workspaces = (memberships ?? [])
-    .map((m: any) => m.workspaces)
-    .filter(Boolean)
-
-  const userName = profile?.full_name ?? user.email ?? 'Użytkownik'
-  const avatarUrl = profile?.avatar_url ?? null
+  const userName = profile?.full_name ?? user.email ?? ''
 
   return (
-    <div
-      className="flex h-screen"
-      data-user-name={userName}
-      data-avatar-url={avatarUrl ?? ''}
-      data-workspace-count={workspaces.length}
-    >
-      {/* Desktop sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar workspaces={workspaces} userName={userName} avatarUrl={avatarUrl} />
-      </div>
-
-      {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Mobile nav */}
-        <MobileNav workspaces={workspaces} userName={userName} avatarUrl={avatarUrl} />
-
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-6">
-          {children}
-        </main>
-      </div>
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-background">
+      <DashboardHeader userName={userName} />
+      <main className="flex-1 overflow-y-auto p-4">
+        {children}
+      </main>
     </div>
   )
 }

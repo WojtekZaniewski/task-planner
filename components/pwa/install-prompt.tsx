@@ -60,7 +60,7 @@ export function InstallPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 sm:left-auto sm:right-4 sm:w-[360px]">
-      <div className="flex items-center gap-3 rounded-lg border bg-card p-4 shadow-lg">
+      <div className="glass-strong flex items-center gap-3 rounded-bento p-4">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
           <Download className="h-5 w-5 text-primary" />
         </div>

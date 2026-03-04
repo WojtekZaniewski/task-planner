@@ -35,12 +35,9 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // Protected routes - redirect to login if not authenticated
   const isProtectedRoute =
-    pathname.startsWith('/private') ||
-    pathname.startsWith('/coworking') ||
-    pathname.startsWith('/settings') ||
-    pathname.startsWith('/onboarding')
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/tasks')
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
@@ -48,21 +45,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Redirect logged-in users away from auth pages
   const isAuthRoute =
     pathname === '/login' ||
     pathname === '/register'
 
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone()
-    url.pathname = '/private'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
-  // Redirect root to /private if logged in
   if (user && pathname === '/') {
     const url = request.nextUrl.clone()
-    url.pathname = '/private'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 

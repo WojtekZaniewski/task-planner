@@ -1,65 +1,49 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
-import type { Task, TaskPriority, TaskStatus, Profile } from '@/lib/types'
+import type { Task, TaskStatus, TaskPriority } from '@/lib/types'
+import type { TaskFormData } from '@/lib/hooks/use-tasks'
 
 interface TaskFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmit: (data: TaskFormData) => Promise<void>
-  initialData?: Task | null
-  members?: Profile[]
-  showAssignee?: boolean
+  editTask?: Task | null
 }
 
-export interface TaskFormData {
-  title: string
-  description: string
-  status: TaskStatus
-  priority: TaskPriority
-  due_date: string
-  due_time: string
-  assigned_to: string | null
-}
-
-export function TaskForm({
-  open,
-  onOpenChange,
-  onSubmit,
-  initialData,
-  members,
-  showAssignee = false,
-}: TaskFormProps) {
+export function TaskForm({ open, onOpenChange, onSubmit, editTask }: TaskFormProps) {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [status, setStatus] = useState<TaskStatus>('todo')
+  const [priority, setPriority] = useState<TaskPriority>('medium')
+  const [dueDate, setDueDate] = useState('')
+  const [dueTime, setDueTime] = useState('')
   const [loading, setLoading] = useState(false)
-  const [title, setTitle] = useState(initialData?.title ?? '')
-  const [description, setDescription] = useState(initialData?.description ?? '')
-  const [status, setStatus] = useState<TaskStatus>(initialData?.status ?? 'todo')
-  const [priority, setPriority] = useState<TaskPriority>(initialData?.priority ?? 'medium')
-  const [dueDate, setDueDate] = useState(initialData?.due_date ?? '')
-  const [dueTime, setDueTime] = useState(initialData?.due_time?.slice(0, 5) ?? '')
-  const [assignedTo, setAssignedTo] = useState(initialData?.assigned_to ?? '')
 
-  // Reset form when initialData changes
-  const isEditing = !!initialData
+  useEffect(() => {
+    if (editTask) {
+      setTitle(editTask.title)
+      setDescription(editTask.description ?? '')
+      setStatus(editTask.status)
+      setPriority(editTask.priority)
+      setDueDate(editTask.due_date ?? '')
+      setDueTime(editTask.due_time ?? '')
+    } else {
+      setTitle('')
+      setDescription('')
+      setStatus('todo')
+      setPriority('medium')
+      setDueDate('')
+      setDueTime('')
+    }
+  }, [editTask, open])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -69,23 +53,12 @@ export function TaskForm({
     try {
       await onSubmit({
         title: title.trim(),
-        description: description.trim(),
+        description: description.trim() || undefined,
         status,
         priority,
-        due_date: dueDate || '',
-        due_time: dueTime || '',
-        assigned_to: assignedTo || null,
+        due_date: dueDate || undefined,
+        due_time: dueTime || undefined,
       })
-      // Reset form
-      if (!isEditing) {
-        setTitle('')
-        setDescription('')
-        setStatus('todo')
-        setPriority('medium')
-        setDueDate('')
-        setDueTime('')
-        setAssignedTo('')
-      }
       onOpenChange(false)
     } finally {
       setLoading(false)
@@ -94,13 +67,10 @@ export function TaskForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="glass-strong border-white/30 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? 'Edytuj zadanie' : 'Nowe zadanie'}
-          </DialogTitle>
+          <DialogTitle>{editTask ? 'Edytuj zadanie' : 'Nowe zadanie'}</DialogTitle>
         </DialogHeader>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Tytuł</Label>
@@ -108,23 +78,21 @@ export function TaskForm({
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Co trzeba zrobić?"
+              placeholder="Nazwa zadania"
               required
             />
           </div>
-
           <div className="space-y-2">
-            <Label htmlFor="description">Opis (opcjonalny)</Label>
+            <Label htmlFor="description">Opis</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Dodatkowe szczegóły..."
+              placeholder="Opcjonalny opis..."
               rows={3}
             />
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Status</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as TaskStatus)}>
@@ -138,7 +106,6 @@ export function TaskForm({
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
               <Label>Priorytet</Label>
               <Select value={priority} onValueChange={(v) => setPriority(v as TaskPriority)}>
@@ -154,8 +121,7 @@ export function TaskForm({
               </Select>
             </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="dueDate">Data</Label>
               <Input
@@ -165,7 +131,6 @@ export function TaskForm({
                 onChange={(e) => setDueDate(e.target.value)}
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="dueTime">Godzina</Label>
               <Input
@@ -176,35 +141,10 @@ export function TaskForm({
               />
             </div>
           </div>
-
-          {showAssignee && members && members.length > 0 && (
-            <div className="space-y-2">
-              <Label>Przypisz do</Label>
-              <Select value={assignedTo} onValueChange={setAssignedTo}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Nieprzypisane" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Nieprzypisane</SelectItem>
-                  {members.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.full_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Anuluj
-            </Button>
-            <Button type="submit" disabled={loading || !title.trim()}>
-              {loading && <Loader2 className="animate-spin" />}
-              {isEditing ? 'Zapisz' : 'Utwórz'}
-            </Button>
-          </DialogFooter>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading && <Loader2 className="animate-spin" />}
+            {editTask ? 'Zapisz zmiany' : 'Utwórz zadanie'}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
