@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-background">
       <DashboardHeader />
-      <main className="flex-1 overflow-y-auto p-4">
+      <main className="flex-1 overflow-y-auto p-3 sm:p-4">
         {children}
       </main>
     </div>

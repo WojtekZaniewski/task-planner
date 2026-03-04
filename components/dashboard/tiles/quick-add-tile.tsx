@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { GlassCard } from '@/components/dashboard/glass-card'
 import { Input } from '@/components/ui/input'
-import { Plus } from 'lucide-react'
+import { Plus, Send } from 'lucide-react'
 import type { TaskFormData } from '@/lib/hooks/use-tasks'
 
 interface QuickAddTileProps {
@@ -32,20 +32,45 @@ export function QuickAddTile({ onAdd }: QuickAddTileProps) {
   }
 
   return (
-    <GlassCard className="bento-1x1 flex flex-col items-center justify-center gap-3">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-        <Plus className="h-6 w-6 text-primary" />
+    <GlassCard className="bento-tall flex flex-col">
+      <h2 className="font-semibold text-foreground mb-4">Nowe Zadanie</h2>
+
+      <div className="flex-1 flex flex-col items-center justify-center gap-5">
+        <button
+          type="button"
+          aria-label="Dodaj nowe zadanie"
+          onClick={() => {
+            const input = document.getElementById('quick-add-input')
+            input?.focus()
+          }}
+          className="glass-button flex h-16 w-16 items-center justify-center rounded-full"
+        >
+          <Plus className="h-7 w-7 text-primary" />
+        </button>
+
+        <form onSubmit={handleSubmit} className="w-full space-y-3">
+          <Input
+            id="quick-add-input"
+            placeholder="Wpisz zadanie..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
+            disabled={loading}
+          />
+          {title.trim() && (
+            <button
+              type="submit"
+              disabled={loading}
+              className="glass-button-primary w-full rounded-2xl px-4 py-3 text-sm font-medium flex items-center justify-center gap-2"
+            >
+              <Send className="h-4 w-4" />
+              Dodaj zadanie
+            </button>
+          )}
+        </form>
+
+        <p className="text-[10px] text-muted-foreground">Enter, aby dodać</p>
       </div>
-      <form onSubmit={handleSubmit} className="w-full">
-        <Input
-          placeholder="Nowe zadanie..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="text-center text-sm bg-white/50 border-white/30 focus:border-primary/30"
-          disabled={loading}
-        />
-      </form>
-      <p className="text-[10px] text-muted-foreground">Enter, aby dodać</p>
     </GlassCard>
   )
 }

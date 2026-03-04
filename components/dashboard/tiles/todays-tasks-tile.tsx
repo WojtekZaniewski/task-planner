@@ -21,13 +21,13 @@ const priorityColors: Record<string, string> = {
 
 export function TodaysTasksTile({ tasks, onStatusChange }: TodaysTasksTileProps) {
   return (
-    <GlassCard className="bento-1x2 flex flex-col" hover={false}>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-foreground">Dziś</h2>
+    <GlassCard className="bento-wide flex flex-col" hover={false}>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-semibold text-foreground">Dzisiejsze zadania</h2>
         <span className="text-xs text-muted-foreground">{tasks.length} zadań</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-2 -mx-1 px-1">
+      <div className="flex-1 overflow-y-auto space-y-1.5 -mx-1 px-1">
         {tasks.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground h-full">
             Brak zadań na dziś
@@ -37,7 +37,7 @@ export function TodaysTasksTile({ tasks, onStatusChange }: TodaysTasksTileProps)
             <div
               key={task.id}
               className={cn(
-                'flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-white/40',
+                'flex items-center gap-3 rounded-2xl p-2.5 transition-colors hover:bg-white/40',
                 task.status === 'done' && 'opacity-50'
               )}
             >
@@ -46,26 +46,24 @@ export function TodaysTasksTile({ tasks, onStatusChange }: TodaysTasksTileProps)
                 onCheckedChange={(checked) =>
                   onStatusChange(task.id, checked ? 'done' : 'todo')
                 }
-                className="mt-0.5 border-primary data-[state=checked]:bg-primary"
+                className="border-primary data-[state=checked]:bg-primary shrink-0"
               />
-              <div className="flex-1 min-w-0">
-                <p className={cn(
-                  'text-sm truncate',
-                  task.status === 'done' && 'line-through text-muted-foreground'
-                )}>
-                  {task.title}
-                </p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="secondary" className={cn('text-[10px] px-1.5 py-0', priorityColors[task.priority])}>
-                    {task.priority}
-                  </Badge>
-                  {task.due_time && (
-                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {task.due_time}
-                    </span>
-                  )}
-                </div>
+              <p className={cn(
+                'text-sm flex-1 truncate',
+                task.status === 'done' && 'line-through text-muted-foreground'
+              )}>
+                {task.title}
+              </p>
+              <div className="flex items-center gap-2 shrink-0">
+                <Badge variant="secondary" className={cn('text-[10px] px-1.5 py-0', priorityColors[task.priority])}>
+                  {task.priority}
+                </Badge>
+                {task.due_time && (
+                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    {task.due_time}
+                  </span>
+                )}
               </div>
             </div>
           ))

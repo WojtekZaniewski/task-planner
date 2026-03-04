@@ -23,7 +23,7 @@
     --border: 214 14% 89%;
     --input: 214 14% 89%;
     --ring: 25 95% 53%;
-    --radius: 1.25rem;
+    --radius: 2.875rem;
   }
 
   * {
@@ -80,11 +80,59 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
-  /* Bento grid */
+  /* Glass buttons — enhanced glass effect for interactive elements */
+  .glass-button {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+  .glass-button:hover {
+    background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+  }
+  .glass-button:active {
+    transform: translateY(0);
+  }
+
+  .glass-button-primary {
+    background: rgba(249, 115, 22, 0.85);
+    color: white;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+      0 4px 16px rgba(249, 115, 22, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+  .glass-button-primary:hover {
+    background: rgba(249, 115, 22, 0.95);
+    box-shadow:
+      0 8px 24px rgba(249, 115, 22, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+  }
+  .glass-button-primary:active {
+    transform: translateY(0);
+  }
+
+  /* Bento grid — 3-column layout matching Figma */
   .bento-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     gap: 16px;
     height: calc(100vh - 80px);
     height: calc(100dvh - 80px);
@@ -92,7 +140,7 @@
 
   @media (max-width: 1024px) {
     .bento-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr 1fr;
       grid-template-rows: auto;
       height: auto;
       min-height: calc(100vh - 80px);
@@ -102,18 +150,31 @@
   @media (max-width: 640px) {
     .bento-grid {
       grid-template-columns: 1fr;
+      gap: 12px;
     }
   }
 
-  .bento-2x2 { grid-column: span 2; grid-row: span 2; }
-  .bento-2x1 { grid-column: span 2; grid-row: span 1; }
-  .bento-1x2 { grid-column: span 1; grid-row: span 2; }
+  /* Bento tile spans */
+  .bento-hero { grid-column: span 1; grid-row: span 3; }
+  .bento-tall { grid-column: span 1; grid-row: span 2; }
+  .bento-wide { grid-column: span 2; grid-row: span 1; }
   .bento-1x1 { grid-column: span 1; grid-row: span 1; }
 
+  @media (max-width: 1024px) {
+    .bento-hero { grid-column: span 1; grid-row: span 2; }
+    .bento-tall { grid-column: span 1; grid-row: span 2; }
+    .bento-wide { grid-column: span 2; grid-row: span 1; }
+    .bento-1x1 { grid-column: span 1; grid-row: span 1; }
+  }
+
   @media (max-width: 640px) {
-    .bento-2x2, .bento-2x1, .bento-1x2, .bento-1x1 {
+    .bento-hero, .bento-tall, .bento-wide, .bento-1x1 {
       grid-column: span 1;
       grid-row: span 1;
+      min-height: 200px;
+    }
+    .bento-hero {
+      min-height: 320px;
     }
   }
 
