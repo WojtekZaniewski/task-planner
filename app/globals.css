@@ -259,6 +259,21 @@
     grid-row: span 1;
   }
 
+  /* Page transition */
+  @keyframes pageEnter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .page-enter {
+    animation: pageEnter 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
   /* Entry animation */
   @keyframes fadeSlideIn {
     from {
