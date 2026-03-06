@@ -21,3 +21,22 @@ export interface Task {
   created_at: string
   updated_at: string
 }
+
+export interface Thought {
+  id: string
+  text: string
+  createdAt: string
+  missionId?: string
+}
+
+export interface CompletedMission {
+  id: string
+  name: string
+  target: number
+  tasksCompleted: number
+  startedAt: string
+  completedAt: string
+  deadline?: string
+  moneyGoal?: number
+  thoughts: Thought[]
+}

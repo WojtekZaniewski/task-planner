@@ -5,12 +5,13 @@ import { GlassCard } from '@/components/dashboard/glass-card'
 import { Input } from '@/components/ui/input'
 import { format, differenceInDays, parseISO } from 'date-fns'
 import { pl } from 'date-fns/locale'
-import { CalendarDays, Pencil, Save, Clock, Wallet } from 'lucide-react'
+import { CalendarDays, Pencil, Save, Clock, Wallet, Trophy } from 'lucide-react'
 
 interface HeroTileProps {
   total: number
   done: number
   onMissionChange?: (active: boolean) => void
+  onMissionComplete?: (name: string, target: number, tasksCompleted: number, startedAt: string, deadline?: string, moneyGoal?: number) => void
 }
 
 export const MISSION_STORAGE_KEY = 'task-planner-mission'
@@ -18,12 +19,13 @@ export const MISSION_STORAGE_KEY = 'task-planner-mission'
 export interface MissionGoal {
   name: string
   target: number
+  startedAt?: string
   deadline?: string
   moneyGoal?: number
   moneyBalance?: number
 }
 
-export function HeroTile({ total, done, onMissionChange }: HeroTileProps) {
+export function HeroTile({ total, done, onMissionChange, onMissionComplete }: HeroTileProps) {
   const today = format(new Date(), "EEEE, d MMMM", { locale: pl })
   const [editing, setEditing] = useState(false)
   const [goal, setGoal] = useState<MissionGoal>({ name: '', target: 0 })
@@ -60,6 +62,7 @@ export function HeroTile({ total, done, onMissionChange }: HeroTileProps) {
     const saved: MissionGoal = {
       name: draft.name.trim(),
       target: draft.target,
+      startedAt: goal.startedAt || new Date().toISOString(),
       deadline: draft.deadline || undefined,
       moneyGoal: draft.moneyGoal || undefined,
       moneyBalance: draft.moneyBalance || undefined,
@@ -68,6 +71,23 @@ export function HeroTile({ total, done, onMissionChange }: HeroTileProps) {
     localStorage.setItem(MISSION_STORAGE_KEY, JSON.stringify(saved))
     onMissionChange?.(true)
     setEditing(false)
+  }
+
+  function handleComplete() {
+    if (!hasGoal) return
+    onMissionComplete?.(
+      goal.name,
+      goal.target,
+      done,
+      goal.startedAt || new Date().toISOString(),
+      goal.deadline,
+      goal.moneyGoal,
+    )
+    // Clear mission
+    setGoal({ name: '', target: 0 })
+    setDraft({ name: '', target: 0 })
+    localStorage.removeItem(MISSION_STORAGE_KEY)
+    onMissionChange?.(false)
   }
 
   function openEdit() {
@@ -229,6 +249,17 @@ export function HeroTile({ total, done, onMissionChange }: HeroTileProps) {
             </div>
           )}
         </div>
+      )}
+
+      {hasGoal && !editing && done >= target && (
+        <button
+          type="button"
+          onClick={handleComplete}
+          className="glass-button-primary w-full rounded-2xl px-4 py-2.5 text-sm font-medium flex items-center justify-center gap-2 mb-2"
+        >
+          <Trophy className="h-4 w-4" />
+          Zakończ misję
+        </button>
       )}
 
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
