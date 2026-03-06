@@ -1,4 +1,4 @@
-import { ThemeToggle } from '@/components/dashboard/theme-toggle'
+import { BottomNav } from '@/components/dashboard/bottom-nav'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,9 +8,9 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-[100dvh] bg-background p-3 sm:p-4 transition-colors duration-300">
-      <ThemeToggle />
+    <div className="min-h-[100dvh] bg-background p-3 pb-20 sm:p-4 sm:pb-20 transition-colors duration-300">
       {children}
+      <BottomNav />
     </div>
   )
 }
