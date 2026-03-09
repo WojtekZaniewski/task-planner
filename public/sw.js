@@ -19,6 +19,12 @@ self.addEventListener('activate', (event) => {
   self.clients.claim()
 })
 
+// Notification click - open app
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  event.waitUntil(clients.openWindow('/dashboard'))
+})
+
 // Fetch event - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests

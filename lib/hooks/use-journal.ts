@@ -186,6 +186,14 @@ export function useJournal() {
     if (data) setActiveThoughts(prev => [rowToThought(data), ...prev])
   }, [activeMissionId])
 
+  const deleteThought = useCallback(async (thoughtId: string) => {
+    const snapshot = activeThoughts
+    setActiveThoughts(prev => prev.filter(t => t.id !== thoughtId))
+    const supabase = createClient()
+    const { error } = await supabase.from('mission_thoughts').delete().eq('id', thoughtId)
+    if (error) { toast.error('Nie udało się usunąć przemyślenia'); setActiveThoughts(snapshot) }
+  }, [activeThoughts])
+
   const getThoughtsForMission = useCallback((missionId: string): Thought[] => {
     if (missionId === activeMissionId) return activeThoughts
     const mission = completedMissions.find(m => m.id === missionId)
@@ -214,6 +222,7 @@ export function useJournal() {
     saveMission,
     archiveMission,
     addThought,
+    deleteThought,
     getThoughtsForMission,
     getWeeklySummary,
   }

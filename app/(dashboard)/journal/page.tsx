@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Calendar, CheckCircle2, Clock, MessageSquare, Trophy, Mic } from 'lucide-react'
+import { ArrowLeft, Calendar, CheckCircle2, Clock, MessageSquare, Trophy, Mic, Trash2 } from 'lucide-react'
 import { GlassCard } from '@/components/dashboard/glass-card'
 import { BentoGrid } from '@/components/dashboard/bento-grid'
 import { useJournal } from '@/lib/hooks/use-journal'
@@ -19,7 +19,7 @@ type SelectedMission = { id: string; isActive: boolean } | null
 
 export default function JournalPage() {
   const router = useRouter()
-  const { completedMissions, activeMission, activeMissionId, getWeeklySummary, getThoughtsForMission, loading } = useJournal()
+  const { completedMissions, activeMission, activeMissionId, getWeeklySummary, getThoughtsForMission, deleteThought, loading } = useJournal()
   const [selectedMission, setSelectedMission] = useState<SelectedMission>(null)
   const [doneTasksCount, setDoneTasksCount] = useState(0)
 
@@ -54,6 +54,7 @@ export default function JournalPage() {
           doneCount={doneTasksCount}
           thoughts={getThoughtsForMission(activeMissionId)}
           onBack={() => setSelectedMission(null)}
+          onDeleteThought={deleteThought}
         />
       )
     }
@@ -195,12 +196,14 @@ function ActiveMissionDetail({
   doneCount,
   thoughts,
   onBack,
+  onDeleteThought,
 }: {
   missionId: string
   activeMission: MissionGoal
   doneCount: number
   thoughts: Thought[]
   onBack: () => void
+  onDeleteThought?: (thoughtId: string) => void
 }) {
   const { notes, loading: notesLoading, recording, uploading, startRecording, stopRecording, deleteNote, refreshSignedUrl } = useVoiceNotes(missionId)
   const days = differenceInDays(new Date(), parseISO(activeMission.startedAt ?? new Date().toISOString()))
@@ -253,7 +256,7 @@ function ActiveMissionDetail({
       </GlassCard>
 
       {/* Thoughts */}
-      <ThoughtsSection thoughts={thoughts} />
+      <ThoughtsSection thoughts={thoughts} onDelete={onDeleteThought} />
 
       {/* Voice Notes */}
       <VoiceNotesSection
@@ -341,7 +344,7 @@ function MissionDetail({ mission, thoughts, onBack }: { mission: CompletedMissio
 
 // ── Shared sub-sections ─────────────────────────────────────────────────────
 
-function ThoughtsSection({ thoughts }: { thoughts: Thought[] }) {
+function ThoughtsSection({ thoughts, onDelete }: { thoughts: Thought[]; onDelete?: (thoughtId: string) => void }) {
   return (
     <div>
       <h2 className="text-sm font-semibold text-foreground mb-3">Przemyślenia ({thoughts.length})</h2>
@@ -353,10 +356,24 @@ function ThoughtsSection({ thoughts }: { thoughts: Thought[] }) {
         <div className="space-y-2">
           {thoughts.map(t => (
             <GlassCard key={t.id} className="py-3 px-4" hover={false}>
-              <p className="text-sm text-foreground">{t.text}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {format(parseISO(t.createdAt), 'd MMM yyyy, HH:mm', { locale: pl })}
-              </p>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-sm text-foreground">{t.text}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {format(parseISO(t.createdAt), 'd MMM yyyy, HH:mm', { locale: pl })}
+                  </p>
+                </div>
+                {onDelete && (
+                  <button
+                    type="button"
+                    onClick={() => onDelete(t.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors p-1 rounded-lg shrink-0"
+                    aria-label="Usuń przemyślenie"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
             </GlassCard>
           ))}
         </div>

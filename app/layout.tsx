@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { ServiceWorkerRegister } from '@/components/pwa/sw-register'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
+import { NotificationSetup } from '@/components/pwa/NotificationSetup'
 import './globals.css'
 
 const inter = Inter({
@@ -46,6 +47,7 @@ export default function RootLayout({
         <Toaster position="bottom-right" richColors />
         <ServiceWorkerRegister />
         <InstallPrompt />
+        <NotificationSetup />
       </body>
     </html>
   )
