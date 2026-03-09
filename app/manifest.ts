@@ -7,6 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Your personal task planner.',
     start_url: '/',
     display: 'standalone',
+    // @ts-expect-error display_override not yet in Next.js types
+    display_override: ['window-controls-overlay', 'standalone'],
     background_color: '#F8F9FA',
     theme_color: '#F97316',
     orientation: 'any',
