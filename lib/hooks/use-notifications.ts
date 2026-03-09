@@ -42,7 +42,8 @@ export function useNotifications() {
 
     // Show prompt if never configured and not dismissed this session
     const sessionDismissed = sessionStorage.getItem(SESSION_KEY)
-    if (!loaded && !sessionDismissed && Notification.permission !== 'denied') {
+    const notifDenied = 'Notification' in window && Notification.permission === 'denied'
+    if (!loaded && !sessionDismissed && !notifDenied) {
       setShowPrompt(true)
     }
   }, [])
