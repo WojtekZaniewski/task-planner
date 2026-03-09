@@ -93,20 +93,27 @@ export function useWorkspace() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return false
 
-    const { data: ws, error: wsError } = await supabase
+    const wsId = crypto.randomUUID()
+    const { error: wsError } = await supabase
       .from('workspaces')
-      .insert({ name: name.trim(), owner_id: user.id })
-      .select()
-      .single()
+      .insert({ id: wsId, name: name.trim(), owner_id: user.id })
 
-    if (wsError || !ws) {
+    if (wsError) {
       toast.error(getT().workspace.errorCreate)
       return false
     }
 
+    const newWs: Workspace = {
+      id: wsId,
+      name: name.trim(),
+      description: null,
+      owner_id: user.id,
+      created_at: new Date().toISOString(),
+    }
+
     // Add owner as member
     await supabase.from('workspace_members').insert({
-      workspace_id: ws.id,
+      workspace_id: newWs.id,
       user_id: user.id,
       role: 'owner',
     })
@@ -115,11 +122,10 @@ export function useWorkspace() {
     const code = generateCode()
     const { data: inv } = await supabase
       .from('workspace_invites')
-      .insert({ workspace_id: ws.id, code, created_by: user.id })
+      .insert({ workspace_id: newWs.id, code, created_by: user.id })
       .select()
       .single()
 
-    const newWs = ws as Workspace
     setWorkspaces(prev => [...prev, newWs])
     setActiveWorkspaceId(newWs.id)
     localStorage.setItem(STORAGE_KEY, newWs.id)
