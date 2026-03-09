@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { ServiceWorkerRegister } from '@/components/pwa/sw-register'
-import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { NotificationSetup } from '@/components/pwa/NotificationSetup'
+import { StandaloneGate } from '@/components/pwa/StandaloneGate'
 import './globals.css'
 
 const inter = Inter({
@@ -43,11 +43,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
       </head>
       <body className={`${inter.variable} font-sans`}>
-        {children}
+        <StandaloneGate>
+          {children}
+          <NotificationSetup />
+        </StandaloneGate>
         <Toaster position="bottom-right" richColors />
         <ServiceWorkerRegister />
-        <InstallPrompt />
-        <NotificationSetup />
       </body>
     </html>
   )
