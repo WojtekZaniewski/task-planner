@@ -3,7 +3,7 @@
 import { useRef } from 'react'
 import { Trash2 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
-import { pl } from 'date-fns/locale'
+import { useTranslations } from '@/lib/i18n'
 import type { VoiceNote } from '@/lib/types'
 
 interface VoiceNotePlayerProps {
@@ -18,6 +18,7 @@ function formatDuration(seconds: number | null): string | null {
 }
 
 export function VoiceNotePlayer({ note, onDelete, onSignedUrlExpired }: VoiceNotePlayerProps) {
+  const t = useTranslations()
   const audioRef = useRef<HTMLAudioElement>(null)
 
   async function handleAudioError() {
@@ -41,7 +42,7 @@ export function VoiceNotePlayer({ note, onDelete, onSignedUrlExpired }: VoiceNot
       />
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
-          {format(parseISO(note.createdAt), 'd MMM yyyy, HH:mm', { locale: pl })}
+          {format(parseISO(note.createdAt), 'd MMM yyyy, HH:mm', { locale: t.dateLocale })}
           {duration && <span className="ml-2 opacity-60">{duration}</span>}
         </span>
         {onDelete && (
@@ -49,7 +50,7 @@ export function VoiceNotePlayer({ note, onDelete, onSignedUrlExpired }: VoiceNot
             type="button"
             onClick={onDelete}
             className="text-muted-foreground hover:text-destructive transition-colors p-1 rounded-lg"
-            aria-label="Usuń notatkę głosową"
+            aria-label={t.voice.deleteNote}
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>

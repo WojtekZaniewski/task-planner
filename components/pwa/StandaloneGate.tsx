@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Share } from 'lucide-react'
+import { useTranslations } from '@/lib/i18n'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -11,6 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 function InstallGate({ isIos }: { isIos: boolean }) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [installing, setInstalling] = useState(false)
+  const t = useTranslations()
 
   useEffect(() => {
     function handleBeforeInstall(e: Event) {
@@ -40,27 +42,27 @@ function InstallGate({ isIos }: { isIos: boolean }) {
         />
         <div className="text-center">
           <h1 className="text-3xl font-bold text-foreground tracking-tight">tasks</h1>
-          <p className="text-sm text-muted-foreground mt-1">Twój osobisty planer zadań</p>
+          <p className="text-sm text-muted-foreground mt-1">{t.gate.subtitle}</p>
         </div>
       </div>
 
       {/* Install card */}
       <div className="glass rounded-2xl p-6 w-full max-w-sm space-y-5">
         <p className="text-sm font-semibold text-foreground text-center">
-          Zainstaluj aplikację, aby kontynuować
+          {t.gate.installToContinue}
         </p>
 
         {isIos ? (
           <div className="space-y-3">
             <Step number={1}>
               Kliknij <Share className="inline h-4 w-4 mx-1 align-text-bottom" />
-              w pasku przeglądarki Safari
+              {t.gate.iosStep1suffix}
             </Step>
             <Step number={2}>
-              Wybierz <strong>„Dodaj do ekranu głównego"</strong>
+              {t.gate.iosStep2}
             </Step>
             <Step number={3}>
-              Otwórz aplikację z ekranu głównego
+              {t.gate.iosStep3}
             </Step>
           </div>
         ) : (
@@ -72,18 +74,18 @@ function InstallGate({ isIos }: { isIos: boolean }) {
                 disabled={installing}
                 className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-60"
               >
-                {installing ? 'Instaluję...' : 'Zainstaluj aplikację'}
+                {installing ? t.gate.installing : t.gate.install}
               </button>
             ) : (
               <>
                 <Step number={1}>
-                  Kliknij menu przeglądarki <strong>(⋮)</strong> w prawym górnym rogu
+                  {t.gate.chromeStep1}
                 </Step>
                 <Step number={2}>
-                  Wybierz <strong>„Zainstaluj aplikację"</strong> lub <strong>„Dodaj do paska zadań"</strong>
+                  {t.gate.chromeStep2}
                 </Step>
                 <Step number={3}>
-                  Otwórz aplikację ze skrótu na pulpicie
+                  {t.gate.chromeStep3}
                 </Step>
               </>
             )}

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
+import { getT } from '@/lib/i18n'
 import type { Task, TaskStatus, TaskPriority } from '@/lib/types'
 
 export interface TaskFormData {
@@ -32,7 +33,7 @@ export function useTasks() {
         .order('created_at', { ascending: false })
 
       if (!cancelled) {
-        if (error) toast.error('Nie udało się załadować zadań')
+        if (error) toast.error(getT().errors.loadTasks)
         setTasks(data ?? [])
         setLoading(false)
       }
@@ -63,7 +64,7 @@ export function useTasks() {
       .single()
 
     if (error) {
-      toast.error('Nie udało się dodać zadania')
+      toast.error(getT().errors.addTask)
       return
     }
     if (created) setTasks(prev => [created, ...prev])
@@ -82,7 +83,7 @@ export function useTasks() {
       .eq('id', taskId)
 
     if (error) {
-      toast.error('Nie udało się zaktualizować zadania')
+      toast.error(getT().errors.updateTask)
       setTasks(snapshot)
     }
   }, [tasks])
@@ -95,7 +96,7 @@ export function useTasks() {
     const { error } = await supabase.from('tasks').delete().eq('id', taskId)
 
     if (error) {
-      toast.error('Nie udało się usunąć zadania')
+      toast.error(getT().errors.deleteTask)
       setTasks(snapshot)
     }
   }, [tasks])
@@ -113,7 +114,7 @@ export function useTasks() {
       .eq('id', taskId)
 
     if (error) {
-      toast.error('Nie udało się zmienić statusu')
+      toast.error(getT().errors.changeStatus)
       setTasks(snapshot)
     }
   }, [tasks])

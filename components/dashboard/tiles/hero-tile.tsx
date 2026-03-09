@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/dashboard/glass-card'
 import { Input } from '@/components/ui/input'
 import { format, differenceInDays, parseISO } from 'date-fns'
-import { pl } from 'date-fns/locale'
+import { useTranslations } from '@/lib/i18n'
 import { CalendarDays, Pencil, Save, Clock, Wallet, Trophy } from 'lucide-react'
 import type { MissionGoal } from '@/lib/types'
 
@@ -18,7 +18,8 @@ interface HeroTileProps {
 }
 
 export function HeroTile({ total, done, activeMission, onMissionSave, onMissionChange, onMissionComplete }: HeroTileProps) {
-  const today = format(new Date(), "EEEE, d MMMM", { locale: pl })
+  const t = useTranslations()
+  const today = format(new Date(), t.dateFormat, { locale: t.dateLocale })
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState<MissionGoal>({ name: '', target: 10 })
   const [saving, setSaving] = useState(false)
@@ -78,8 +79,8 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight">
-            Twoja<br />
-            <span className="text-primary">misja</span>
+            {t.hero.heading1}<br />
+            <span className="text-primary">{t.hero.heading2}</span>
           </h1>
           {hasGoal && !editing && (
             <p className="text-sm text-muted-foreground mt-2">{activeMission!.name}</p>
@@ -88,7 +89,7 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
         {!editing && (
           <button
             type="button"
-            aria-label="Edytuj cel"
+            aria-label={t.hero.editGoal}
             onClick={openEdit}
             className="glass-button flex h-8 w-8 items-center justify-center rounded-full shrink-0"
           >
@@ -101,11 +102,11 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
         <div className="flex-1 flex flex-col justify-center gap-3 py-4 overflow-y-auto">
           <div>
             <label htmlFor="goal-name" className="text-xs text-muted-foreground mb-1.5 block">
-              Główny cel:
+              {t.hero.goalLabel}
             </label>
             <Input
               id="goal-name"
-              placeholder="Np. Zdać egzamin"
+              placeholder={t.hero.goalPlaceholder}
               value={draft.name}
               onChange={(e) => setDraft(d => ({ ...d, name: e.target.value }))}
               className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
@@ -113,7 +114,7 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
           </div>
           <div>
             <label htmlFor="goal-target" className="text-xs text-muted-foreground mb-1.5 block">
-              Ilość zadań aby osiągnąć 100%:
+              {t.hero.tasksLabel}
             </label>
             <Input
               id="goal-target"
@@ -127,7 +128,7 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
           </div>
           <div>
             <label htmlFor="goal-deadline" className="text-xs text-muted-foreground mb-1.5 block">
-              Deadline (opcjonalnie):
+              {t.hero.deadlineLabel}
             </label>
             <Input
               id="goal-deadline"
@@ -139,13 +140,13 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
           </div>
           <div>
             <label htmlFor="goal-money" className="text-xs text-muted-foreground mb-1.5 block">
-              Cel pieniędzy (opcjonalnie):
+              {t.hero.moneyGoalLabel}
             </label>
             <Input
               id="goal-money"
               type="number"
               min={0}
-              placeholder="Np. 5000"
+              placeholder={t.hero.moneyGoalPlaceholder}
               value={draft.moneyGoal || ''}
               onChange={(e) => setDraft(d => ({ ...d, moneyGoal: parseInt(e.target.value) || 0 }))}
               className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
@@ -154,13 +155,13 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
           {(draft.moneyGoal ?? 0) > 0 && (
             <div>
               <label htmlFor="goal-balance" className="text-xs text-muted-foreground mb-1.5 block">
-                Obecny stan konta:
+                {t.hero.moneyBalanceLabel}
               </label>
               <Input
                 id="goal-balance"
                 type="number"
                 min={0}
-                placeholder="Np. 2000"
+                placeholder={t.hero.moneyBalancePlaceholder}
                 value={draft.moneyBalance || ''}
                 onChange={(e) => setDraft(d => ({ ...d, moneyBalance: parseInt(e.target.value) || 0 }))}
                 className="glass-button text-sm border-0 rounded-2xl px-4 py-3 h-auto focus-visible:ring-primary/30"
@@ -174,7 +175,7 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
             className="glass-button-primary w-full rounded-2xl px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Save className="h-4 w-4" />
-            {saving ? 'Zapisuję...' : 'Zapisz cel'}
+            {saving ? t.hero.saving : t.hero.saveGoal}
           </button>
         </div>
       ) : (
@@ -202,26 +203,26 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
               <span className="text-4xl sm:text-5xl font-bold text-foreground">{percentage}%</span>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-2">{done} z {target} ukończonych</p>
+          <p className="text-sm text-muted-foreground mt-2">{t.hero.tasksCompleted(done, target)}</p>
 
           {(daysLeft !== null || moneyMissing !== null) && (
             <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
               {daysLeft !== null && (
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground glass-subtle rounded-full px-3 py-1">
                   <Clock className="h-3 w-3" />
-                  {daysLeft > 0 ? `Pozostało ${daysLeft} dni` : daysLeft === 0 ? 'Dziś deadline!' : `${Math.abs(daysLeft)} dni po terminie`}
+                  {daysLeft > 0 ? t.hero.daysLeft(daysLeft) : daysLeft === 0 ? t.hero.deadlineToday : t.hero.daysOverdue(daysLeft)}
                 </span>
               )}
               {moneyMissing !== null && moneyMissing > 0 && (
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground glass-subtle rounded-full px-3 py-1">
                   <Wallet className="h-3 w-3" />
-                  Brakuje {moneyMissing.toLocaleString('pl-PL')} zł
+                  {t.hero.moneyMissing(moneyMissing)}
                 </span>
               )}
               {moneyMissing !== null && moneyMissing <= 0 && (
                 <span className="flex items-center gap-1.5 text-xs text-primary glass-subtle rounded-full px-3 py-1">
                   <Wallet className="h-3 w-3" />
-                  Cel osiągnięty!
+                  {t.hero.goalReached}
                 </span>
               )}
             </div>
@@ -236,7 +237,7 @@ export function HeroTile({ total, done, activeMission, onMissionSave, onMissionC
           className="glass-button-primary w-full rounded-2xl px-4 py-2.5 text-sm font-medium flex items-center justify-center gap-2 mb-2"
         >
           <Trophy className="h-4 w-4" />
-          Zakończ misję
+          {t.hero.endMission}
         </button>
       )}
 

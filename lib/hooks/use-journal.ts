@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
+import { getT } from '@/lib/i18n'
 import type { CompletedMission, MissionGoal, MissionRow, MissionThoughtRow, Thought } from '@/lib/types'
 
 function rowToThought(row: MissionThoughtRow): Thought {
@@ -48,8 +49,8 @@ export function useJournal() {
 
       if (cancelled) return
 
-      if (activeRes.error) toast.error('Nie udało się załadować misji')
-      if (completedRes.error) toast.error('Nie udało się załadować dziennika')
+      if (activeRes.error) toast.error(getT().errors.loadMission)
+      if (completedRes.error) toast.error(getT().errors.loadJournal)
 
       const activeRow = activeRes.data as MissionRow | null
 
@@ -107,7 +108,7 @@ export function useJournal() {
         })
         .eq('id', activeMissionId)
 
-      if (error) { toast.error('Nie udało się zapisać misji'); return }
+      if (error) { toast.error(getT().errors.saveMission); return }
     } else {
       // Insert new active mission
       const { data: created, error } = await supabase
@@ -123,7 +124,7 @@ export function useJournal() {
         .select()
         .single()
 
-      if (error) { toast.error('Nie udało się utworzyć misji'); return }
+      if (error) { toast.error(getT().errors.createMission); return }
       if (created) setActiveMissionId(created.id)
     }
 
@@ -149,7 +150,7 @@ export function useJournal() {
       .eq('id', activeMissionId)
       .is('completed_at', null)
 
-    if (error) { toast.error('Nie udało się zakończyć misji'); return }
+    if (error) { toast.error(getT().errors.completeMission); return }
 
     const archived: CompletedMission = {
       id: activeMissionId,
@@ -182,7 +183,7 @@ export function useJournal() {
       .select()
       .single()
 
-    if (error) { toast.error('Nie udało się dodać przemyślenia'); return }
+    if (error) { toast.error(getT().errors.addThought); return }
     if (data) setActiveThoughts(prev => [rowToThought(data), ...prev])
   }, [activeMissionId])
 
@@ -191,7 +192,7 @@ export function useJournal() {
     setActiveThoughts(prev => prev.filter(t => t.id !== thoughtId))
     const supabase = createClient()
     const { error } = await supabase.from('mission_thoughts').delete().eq('id', thoughtId)
-    if (error) { toast.error('Nie udało się usunąć przemyślenia'); setActiveThoughts(snapshot) }
+    if (error) { toast.error(getT().errors.deleteThought); setActiveThoughts(snapshot) }
   }, [activeThoughts])
 
   const getThoughtsForMission = useCallback((missionId: string): Thought[] => {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
+import { getT } from '@/lib/i18n'
 import type { VoiceNote, VoiceNoteRow } from '@/lib/types'
 
 function rowToVoiceNote(row: VoiceNoteRow, signedUrl?: string): VoiceNote {
@@ -53,7 +54,7 @@ export function useVoiceNotes(missionId: string | null) {
       .order('created_at', { ascending: true })
 
     if (cancelled) return
-    if (error) { toast.error('Nie udało się załadować notatek głosowych'); setLoading(false); return }
+    if (error) { toast.error(getT().errors.loadVoiceNotes); setLoading(false); return }
 
     const rows = (data ?? []) as VoiceNoteRow[]
     const notesWithUrls = await Promise.all(
@@ -80,7 +81,7 @@ export function useVoiceNotes(missionId: string | null) {
   const startRecording = useCallback(async () => {
     const mimeType = getMimeType()
     if (!mimeType) {
-      toast.error('Twoja przeglądarka nie obsługuje nagrywania audio')
+      toast.error(getT().errors.browserNoAudio)
       return
     }
 
@@ -101,9 +102,9 @@ export function useVoiceNotes(missionId: string | null) {
       setRecording(true)
     } catch (err) {
       if (err instanceof Error && err.name === 'NotAllowedError') {
-        toast.error('Brak dostępu do mikrofonu')
+        toast.error(getT().errors.micAccess)
       } else {
-        toast.error('Nie udało się uruchomić nagrywania')
+        toast.error(getT().errors.startRecording)
       }
     }
   }, [])
@@ -135,7 +136,7 @@ export function useVoiceNotes(missionId: string | null) {
           .upload(storagePath, blob, { contentType: mimeType })
 
         if (uploadError) {
-          toast.error('Nie udało się przesłać nagrania')
+          toast.error(getT().errors.uploadRecording)
           setUploading(false)
           resolve()
           return
@@ -148,7 +149,7 @@ export function useVoiceNotes(missionId: string | null) {
           .single()
 
         if (dbError) {
-          toast.error('Nie udało się zapisać notatki')
+          toast.error(getT().errors.saveVoiceNote)
           setUploading(false)
           resolve()
           return

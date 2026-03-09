@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { getT } from '@/lib/i18n'
 
 export interface NotificationPrefs {
   enabled: boolean
@@ -61,7 +62,7 @@ export function useNotifications() {
 
     if (Math.abs(diffMinutes) <= 10 && p.lastShown !== today) {
       new Notification('tasks', {
-        body: 'Czas na sprawdzenie zadań! 🎯',
+        body: getT().notifications.notifBody,
         icon: '/icons/icon-192x192.png',
       })
       const updated = { ...p, lastShown: today }

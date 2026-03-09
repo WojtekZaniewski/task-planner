@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Mic, Square, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/lib/i18n'
 
 interface VoiceRecorderProps {
   recording: boolean
@@ -12,6 +13,7 @@ interface VoiceRecorderProps {
 }
 
 export function VoiceRecorder({ recording, uploading, onStart, onStop }: VoiceRecorderProps) {
+  const t = useTranslations()
   const [elapsed, setElapsed] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -33,7 +35,7 @@ export function VoiceRecorder({ recording, uploading, onStart, onStop }: VoiceRe
     return (
       <button disabled className="glass-button flex items-center gap-2 rounded-2xl px-3 py-1.5 text-xs text-muted-foreground opacity-60">
         <Loader2 className="h-3.5 w-3.5 animate-spin" />
-        Przesyłam...
+        {t.voice.uploading}
       </button>
     )
   }
@@ -62,7 +64,7 @@ export function VoiceRecorder({ recording, uploading, onStart, onStop }: VoiceRe
       className="glass-button flex items-center gap-2 rounded-2xl px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
     >
       <Mic className="h-3.5 w-3.5" />
-      Nagraj
+      {t.voice.record}
     </button>
   )
 }

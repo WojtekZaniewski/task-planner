@@ -3,12 +3,14 @@
 import { usePathname, useRouter } from 'next/navigation'
 import { Home, Sun, Moon, BookOpen } from 'lucide-react'
 import { useTheme } from '@/lib/hooks/use-theme'
+import { useTranslations } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
 export function BottomNav() {
   const pathname = usePathname()
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
+  const t = useTranslations()
 
   const isHome = pathname === '/dashboard' || pathname === '/'
   const isJournal = pathname === '/journal'
@@ -31,7 +33,7 @@ export function BottomNav() {
 
       <button
         type="button"
-        aria-label="Przełącz tryb ciemny"
+        aria-label={t.nav.toggleDark}
         onClick={toggleTheme}
         className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-all duration-300"
       >
@@ -44,7 +46,7 @@ export function BottomNav() {
 
       <button
         type="button"
-        aria-label="Dziennik"
+        aria-label={t.nav.journal}
         onClick={() => router.push('/journal')}
         className={cn(
           'flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300',

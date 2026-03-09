@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Send } from 'lucide-react'
+import { useTranslations } from '@/lib/i18n'
 import { useTasks } from '@/lib/hooks/use-tasks'
 import { useJournal } from '@/lib/hooks/use-journal'
 import { BentoGrid } from '@/components/dashboard/bento-grid'
@@ -14,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 export default function DashboardPage() {
   const { tasks, loading, createTask, changeStatus, deleteTask } = useTasks()
   const { activeMission, addThought, archiveMission, saveMission } = useJournal()
+  const t = useTranslations()
   const [missionActive, setMissionActive] = useState(false)
   const [thoughtText, setThoughtText] = useState('')
 
@@ -69,14 +71,14 @@ export default function DashboardPage() {
       >
         <input
           type="text"
-          placeholder="Twoje przemyślenia dzisiaj..."
+          placeholder={t.dashboard.thoughtPlaceholder}
           value={thoughtText}
           onChange={(e) => setThoughtText(e.target.value)}
           className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
         />
         <button
           type="submit"
-          aria-label="Dodaj przemyślenie"
+          aria-label={t.dashboard.addThought}
           disabled={!thoughtText.trim()}
           className="text-primary disabled:opacity-30 transition-opacity"
         >

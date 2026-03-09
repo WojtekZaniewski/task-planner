@@ -11,7 +11,7 @@ import { VoiceRecorder } from '@/components/journal/VoiceRecorder'
 import { VoiceNotePlayer } from '@/components/journal/VoiceNotePlayer'
 import { Progress } from '@/components/ui/progress'
 import { format, differenceInDays, parseISO } from 'date-fns'
-import { pl } from 'date-fns/locale'
+import { useTranslations } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
 import type { CompletedMission, MissionGoal, Thought, VoiceNote } from '@/lib/types'
 
@@ -20,6 +20,7 @@ type SelectedMission = { id: string; isActive: boolean } | null
 export default function JournalPage() {
   const router = useRouter()
   const { completedMissions, activeMission, activeMissionId, getWeeklySummary, getThoughtsForMission, deleteThought, loading } = useJournal()
+  const t = useTranslations()
   const [selectedMission, setSelectedMission] = useState<SelectedMission>(null)
   const [doneTasksCount, setDoneTasksCount] = useState(0)
 
@@ -82,13 +83,13 @@ export default function JournalPage() {
       <div className="flex items-center gap-3">
         <button
           type="button"
-          aria-label="Wróć do dashboardu"
+          aria-label={t.journal.backToDashboard}
           onClick={() => router.push('/dashboard')}
           className="glass-button flex h-9 w-9 items-center justify-center rounded-full"
         >
           <ArrowLeft className="h-4 w-4 text-foreground" />
         </button>
-        <h1 className="text-2xl font-bold text-foreground">Dziennik</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t.journal.title}</h1>
       </div>
 
       {/* Active mission */}
@@ -100,20 +101,20 @@ export default function JournalPage() {
           <div className="flex items-start justify-between mb-3">
             <p className="text-sm font-semibold text-foreground">{activeMission.name}</p>
             <span className="text-[10px] font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5 shrink-0">
-              W trakcie
+              {t.journal.inProgress}
             </span>
           </div>
           <Progress value={activePercentage} className="h-1.5 mb-2" />
           <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">{doneTasksCount} z {activeMission.target} zadań</p>
+            <p className="text-xs text-muted-foreground">{t.journal.tasksOf(doneTasksCount, activeMission.target)}</p>
             {activeDaysLeft !== null && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground glass-subtle rounded-full px-2.5 py-1">
                 <Clock className="h-3 w-3" />
                 {activeDaysLeft > 0
-                  ? `${activeDaysLeft} dni`
+                  ? t.journal.daysShort(activeDaysLeft)
                   : activeDaysLeft === 0
-                  ? 'Dziś!'
-                  : 'Po terminie'}
+                  ? t.journal.deadlineToday
+                  : t.journal.pastDeadline}
               </span>
             )}
           </div>
@@ -126,11 +127,11 @@ export default function JournalPage() {
           <Trophy className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-foreground">Podsumowanie tygodniowe</p>
+          <p className="text-sm font-semibold text-foreground">{t.journal.weeklyTitle}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {weekly.missionsCount === 0
-              ? 'Brak ukończonych misji w tym tygodniu'
-              : `${weekly.missionsCount} ${weekly.missionsCount === 1 ? 'misja' : weekly.missionsCount < 5 ? 'misje' : 'misji'} · ${weekly.totalTasks} ${weekly.totalTasks === 1 ? 'zadanie' : 'zadań'}`}
+              ? t.journal.weeklyEmpty
+              : t.journal.weeklyStats(weekly.missionsCount, weekly.totalTasks)}
           </p>
         </div>
       </GlassCard>
@@ -140,7 +141,7 @@ export default function JournalPage() {
         <GlassCard className="flex flex-col items-center justify-center py-12 gap-3" hover={false}>
           <Calendar className="h-10 w-10 text-muted-foreground/30" />
           <p className="text-sm text-muted-foreground text-center">
-            Tutaj pojawią się ukończone misje
+            {t.journal.noCompleted}
           </p>
         </GlassCard>
       ) : (
@@ -159,17 +160,17 @@ export default function JournalPage() {
                   <div>
                     <p className="text-sm font-semibold text-foreground">{m.name}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {format(parseISO(m.completedAt), 'd MMMM yyyy', { locale: pl })}
+                      {format(parseISO(m.completedAt), 'd MMMM yyyy', { locale: t.dateLocale })}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-3">
                     <span className="flex items-center gap-1 text-xs text-muted-foreground glass-subtle rounded-full px-2.5 py-1">
                       <Clock className="h-3 w-3" />
-                      {days} {days === 1 ? 'dzień' : 'dni'}
+                      {t.journal.durationDays(days)}
                     </span>
                     <span className="flex items-center gap-1 text-xs text-muted-foreground glass-subtle rounded-full px-2.5 py-1">
                       <CheckCircle2 className="h-3 w-3" />
-                      {m.tasksCompleted} {m.tasksCompleted === 1 ? 'zadanie' : 'zadań'}
+                      {t.journal.tasksCount(m.tasksCompleted)}
                     </span>
                     {thoughtCount > 0 && (
                       <span className="flex items-center gap-1 text-xs text-primary glass-subtle rounded-full px-2.5 py-1">
@@ -206,49 +207,50 @@ function ActiveMissionDetail({
   onDeleteThought?: (thoughtId: string) => void
 }) {
   const { notes, loading: notesLoading, recording, uploading, startRecording, stopRecording, deleteNote, refreshSignedUrl } = useVoiceNotes(missionId)
+  const t = useTranslations()
   const days = differenceInDays(new Date(), parseISO(activeMission.startedAt ?? new Date().toISOString()))
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <button type="button" aria-label="Wróć do dziennika" onClick={onBack} className="glass-button flex h-9 w-9 items-center justify-center rounded-full">
+        <button type="button" aria-label={t.journal.backToJournal} onClick={onBack} className="glass-button flex h-9 w-9 items-center justify-center rounded-full">
           <ArrowLeft className="h-4 w-4 text-foreground" />
         </button>
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold text-foreground">{activeMission.name}</h1>
-          <span className="text-[10px] font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">W trakcie</span>
+          <span className="text-[10px] font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">{t.journal.inProgress}</span>
         </div>
       </div>
 
       <GlassCard hover={false}>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-muted-foreground">Czas trwania (w toku)</p>
-            <p className="text-lg font-bold text-foreground">{days} {days === 1 ? 'dzień' : 'dni'}</p>
+            <p className="text-xs text-muted-foreground">{t.journal.durationOngoing}</p>
+            <p className="text-lg font-bold text-foreground">{t.journal.durationDays(days)}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Zadania</p>
+            <p className="text-xs text-muted-foreground">{t.journal.tasksLabel}</p>
             <p className="text-lg font-bold text-foreground">{doneCount} / {activeMission.target}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Rozpoczęto</p>
+            <p className="text-xs text-muted-foreground">{t.journal.startedLabel}</p>
             <p className="text-sm font-medium text-foreground">
-              {format(parseISO(activeMission.startedAt ?? new Date().toISOString()), 'd MMM yyyy', { locale: pl })}
+              {format(parseISO(activeMission.startedAt ?? new Date().toISOString()), 'd MMM yyyy', { locale: t.dateLocale })}
             </p>
           </div>
           {activeMission.deadline && (
             <div>
-              <p className="text-xs text-muted-foreground">Deadline</p>
+              <p className="text-xs text-muted-foreground">{t.journal.deadlineLabel}</p>
               <p className="text-sm font-medium text-foreground">
-                {format(parseISO(activeMission.deadline), 'd MMM yyyy', { locale: pl })}
+                {format(parseISO(activeMission.deadline), 'd MMM yyyy', { locale: t.dateLocale })}
               </p>
             </div>
           )}
           {activeMission.moneyGoal && (
             <div>
-              <p className="text-xs text-muted-foreground">Cel pieniędzy</p>
+              <p className="text-xs text-muted-foreground">{t.journal.moneyGoalLabel}</p>
               <p className="text-sm font-medium text-foreground">
-                {activeMission.moneyGoal.toLocaleString('pl-PL')} zł
+                {activeMission.moneyGoal.toLocaleString()}
               </p>
             </div>
           )}
@@ -278,12 +280,13 @@ function ActiveMissionDetail({
 
 function MissionDetail({ mission, thoughts, onBack }: { mission: CompletedMission; thoughts: Thought[]; onBack: () => void }) {
   const { notes, loading: notesLoading, deleteNote, refreshSignedUrl } = useVoiceNotes(mission.id)
+  const t = useTranslations()
   const days = differenceInDays(parseISO(mission.completedAt), parseISO(mission.startedAt))
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <button type="button" aria-label="Wróć do dziennika" onClick={onBack} className="glass-button flex h-9 w-9 items-center justify-center rounded-full">
+        <button type="button" aria-label={t.journal.backToJournal} onClick={onBack} className="glass-button flex h-9 w-9 items-center justify-center rounded-full">
           <ArrowLeft className="h-4 w-4 text-foreground" />
         </button>
         <h1 className="text-2xl font-bold text-foreground">{mission.name}</h1>
@@ -292,38 +295,38 @@ function MissionDetail({ mission, thoughts, onBack }: { mission: CompletedMissio
       <GlassCard hover={false}>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-muted-foreground">Czas trwania</p>
-            <p className="text-lg font-bold text-foreground">{days} {days === 1 ? 'dzień' : 'dni'}</p>
+            <p className="text-xs text-muted-foreground">{t.journal.durationLabel}</p>
+            <p className="text-lg font-bold text-foreground">{t.journal.durationDays(days)}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Zadania</p>
+            <p className="text-xs text-muted-foreground">{t.journal.tasksLabel}</p>
             <p className="text-lg font-bold text-foreground">{mission.tasksCompleted} / {mission.target}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Rozpoczęto</p>
+            <p className="text-xs text-muted-foreground">{t.journal.startedLabel}</p>
             <p className="text-sm font-medium text-foreground">
-              {format(parseISO(mission.startedAt), 'd MMM yyyy', { locale: pl })}
+              {format(parseISO(mission.startedAt), 'd MMM yyyy', { locale: t.dateLocale })}
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Ukończono</p>
+            <p className="text-xs text-muted-foreground">{t.journal.completedLabel}</p>
             <p className="text-sm font-medium text-foreground">
-              {format(parseISO(mission.completedAt), 'd MMM yyyy', { locale: pl })}
+              {format(parseISO(mission.completedAt), 'd MMM yyyy', { locale: t.dateLocale })}
             </p>
           </div>
           {mission.deadline && (
             <div>
-              <p className="text-xs text-muted-foreground">Deadline</p>
+              <p className="text-xs text-muted-foreground">{t.journal.deadlineLabel}</p>
               <p className="text-sm font-medium text-foreground">
-                {format(parseISO(mission.deadline), 'd MMM yyyy', { locale: pl })}
+                {format(parseISO(mission.deadline), 'd MMM yyyy', { locale: t.dateLocale })}
               </p>
             </div>
           )}
           {mission.moneyGoal && (
             <div>
-              <p className="text-xs text-muted-foreground">Cel pieniędzy</p>
+              <p className="text-xs text-muted-foreground">{t.journal.moneyGoalLabel}</p>
               <p className="text-sm font-medium text-foreground">
-                {mission.moneyGoal.toLocaleString('pl-PL')} zł
+                {mission.moneyGoal.toLocaleString()}
               </p>
             </div>
           )}
@@ -345,30 +348,31 @@ function MissionDetail({ mission, thoughts, onBack }: { mission: CompletedMissio
 // ── Shared sub-sections ─────────────────────────────────────────────────────
 
 function ThoughtsSection({ thoughts, onDelete }: { thoughts: Thought[]; onDelete?: (thoughtId: string) => void }) {
+  const t = useTranslations()
   return (
     <div>
-      <h2 className="text-sm font-semibold text-foreground mb-3">Przemyślenia ({thoughts.length})</h2>
+      <h2 className="text-sm font-semibold text-foreground mb-3">{t.journal.thoughtsHeading(thoughts.length)}</h2>
       {thoughts.length === 0 ? (
         <GlassCard className="flex items-center justify-center py-8" hover={false}>
-          <p className="text-sm text-muted-foreground">Brak przemyśleń</p>
+          <p className="text-sm text-muted-foreground">{t.journal.noThoughts}</p>
         </GlassCard>
       ) : (
         <div className="space-y-2">
-          {thoughts.map(t => (
-            <GlassCard key={t.id} className="py-3 px-4" hover={false}>
+          {thoughts.map(thought => (
+            <GlassCard key={thought.id} className="py-3 px-4" hover={false}>
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="text-sm text-foreground">{t.text}</p>
+                  <p className="text-sm text-foreground">{thought.text}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {format(parseISO(t.createdAt), 'd MMM yyyy, HH:mm', { locale: pl })}
+                    {format(parseISO(thought.createdAt), 'd MMM yyyy, HH:mm', { locale: t.dateLocale })}
                   </p>
                 </div>
                 {onDelete && (
                   <button
                     type="button"
-                    onClick={() => onDelete(t.id)}
+                    onClick={() => onDelete(thought.id)}
                     className="text-muted-foreground hover:text-destructive transition-colors p-1 rounded-lg shrink-0"
-                    aria-label="Usuń przemyślenie"
+                    aria-label={t.journal.deleteThought}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -403,11 +407,12 @@ function VoiceNotesSection({
   onSignedUrlExpired: (note: VoiceNote) => Promise<string>
   canRecord?: boolean
 }) {
+  const t = useTranslations()
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-foreground">
-          Notatki głosowe ({notes.length})
+          {t.journal.voiceNotesHeading(notes.length)}
         </h2>
         {canRecord && onStart && onStop && (
           <VoiceRecorder
@@ -425,7 +430,7 @@ function VoiceNotesSection({
       ) : notes.length === 0 ? (
         <GlassCard className="flex flex-col items-center justify-center py-8 gap-2" hover={false}>
           <Mic className="h-6 w-6 text-muted-foreground/30" />
-          <p className="text-sm text-muted-foreground">Brak notatek głosowych</p>
+          <p className="text-sm text-muted-foreground">{t.journal.noVoiceNotes}</p>
         </GlassCard>
       ) : (
         <div className="space-y-2">

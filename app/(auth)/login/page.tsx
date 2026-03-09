@@ -1,8 +1,11 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from '@/lib/i18n'
 
 export default function LoginPage() {
+  const t = useTranslations()
+
   async function handleGoogleLogin() {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
@@ -16,12 +19,8 @@ export default function LoginPage() {
   return (
     <div className="glass rounded-bento p-8 w-full max-w-sm flex flex-col items-center gap-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-foreground">
-          tasks
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          Twoje zadania, Twoja misja
-        </p>
+        <h1 className="text-3xl font-bold text-foreground">tasks</h1>
+        <p className="text-sm text-muted-foreground mt-2">{t.auth.subtitle}</p>
       </div>
 
       <button
@@ -47,7 +46,7 @@ export default function LoginPage() {
             fill="#EA4335"
           />
         </svg>
-        Zaloguj się przez Google
+        {t.auth.googleButton}
       </button>
 
     </div>
