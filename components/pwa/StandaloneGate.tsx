@@ -106,7 +106,8 @@ function Step({ number, children }: { number: number; children: React.ReactNode 
 }
 
 export function StandaloneGate({ children }: { children: React.ReactNode }) {
-  const [isStandalone, setIsStandalone] = useState<boolean | null>(null)
+  // Default false — always starts with the gate (no null/blank flash, no SSR mismatch)
+  const [isStandalone, setIsStandalone] = useState(false)
   const [isIos, setIsIos] = useState(false)
 
   useEffect(() => {
@@ -117,8 +118,6 @@ export function StandaloneGate({ children }: { children: React.ReactNode }) {
     setIsIos(/iphone|ipad|ipod/i.test(navigator.userAgent))
   }, [])
 
-  if (isStandalone === null) return null
-  if (isStandalone) return <>{children}</>
-
-  return <InstallGate isIos={isIos} />
+  if (!isStandalone) return <InstallGate isIos={isIos} />
+  return <>{children}</>
 }

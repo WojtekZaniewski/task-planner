@@ -1,4 +1,4 @@
-const CACHE_NAME = 'taskflow-v2'
+const CACHE_NAME = 'taskflow-v3'
 
 // Install event - cache essential assets
 self.addEventListener('install', (event) => {
