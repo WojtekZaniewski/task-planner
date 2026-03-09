@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase/client'
 import type { Task, TaskStatus, TaskPriority } from '@/lib/types'
 
 export interface TaskFormData {
@@ -12,106 +14,111 @@ export interface TaskFormData {
   due_time?: string
 }
 
-const STORAGE_KEY = 'task-planner-tasks'
-
-function loadTasks(): Task[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : []
-  } catch {
-    return []
-  }
-}
-
-function saveTasks(tasks: Task[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
-}
-
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
-    setTasks(loadTasks())
-    setLoading(false)
-  }, [])
+    let cancelled = false
 
-  const createTask = useCallback(
-    async (data: TaskFormData) => {
-      const now = new Date().toISOString()
-      const newTask: Task = {
-        id: crypto.randomUUID(),
+    async function load() {
+      setLoading(true)
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .is('workspace_id', null)
+        .order('created_at', { ascending: false })
+
+      if (!cancelled) {
+        if (error) toast.error('Nie udało się załadować zadań')
+        setTasks(data ?? [])
+        setLoading(false)
+      }
+    }
+
+    load()
+    return () => { cancelled = true }
+  }, [refreshKey])
+
+  const createTask = useCallback(async (data: TaskFormData) => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const { data: created, error } = await supabase
+      .from('tasks')
+      .insert({
         title: data.title,
         description: data.description || null,
         status: data.status,
         priority: data.priority,
         due_date: data.due_date || null,
         due_time: data.due_time || null,
-        created_by: 'local',
+        created_by: user.id,
         position: 0,
-        created_at: now,
-        updated_at: now,
-      }
-
-      setTasks(prev => {
-        const updated = [newTask, ...prev]
-        saveTasks(updated)
-        return updated
       })
-    },
-    []
-  )
+      .select()
+      .single()
 
-  const updateTask = useCallback(
-    async (taskId: string, data: Partial<TaskFormData>) => {
-      setTasks(prev => {
-        const updated = prev.map(t => {
-          if (t.id !== taskId) return t
-          return {
-            ...t,
-            ...data,
-            updated_at: new Date().toISOString(),
-          }
-        })
-        saveTasks(updated)
-        return updated
-      })
-    },
-    []
-  )
+    if (error) {
+      toast.error('Nie udało się dodać zadania')
+      return
+    }
+    if (created) setTasks(prev => [created, ...prev])
+  }, [])
 
-  const deleteTask = useCallback(
-    async (taskId: string) => {
-      setTasks(prev => {
-        const updated = prev.filter(t => t.id !== taskId)
-        saveTasks(updated)
-        return updated
-      })
-    },
-    []
-  )
+  const updateTask = useCallback(async (taskId: string, data: Partial<TaskFormData>) => {
+    const snapshot = tasks
+    setTasks(current =>
+      current.map(t => t.id === taskId ? { ...t, ...data, updated_at: new Date().toISOString() } : t)
+    )
 
-  const changeStatus = useCallback(
-    async (taskId: string, status: TaskStatus) => {
-      setTasks(prev => {
-        const updated = prev.map(t =>
-          t.id === taskId ? { ...t, status, updated_at: new Date().toISOString() } : t
-        )
-        saveTasks(updated)
-        return updated
-      })
-    },
-    []
-  )
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('tasks')
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq('id', taskId)
 
-  return {
-    tasks,
-    loading,
-    createTask,
-    updateTask,
-    deleteTask,
-    changeStatus,
-    refresh: () => setTasks(loadTasks()),
-  }
+    if (error) {
+      toast.error('Nie udało się zaktualizować zadania')
+      setTasks(snapshot)
+    }
+  }, [tasks])
+
+  const deleteTask = useCallback(async (taskId: string) => {
+    const snapshot = tasks
+    setTasks(current => current.filter(t => t.id !== taskId))
+
+    const supabase = createClient()
+    const { error } = await supabase.from('tasks').delete().eq('id', taskId)
+
+    if (error) {
+      toast.error('Nie udało się usunąć zadania')
+      setTasks(snapshot)
+    }
+  }, [tasks])
+
+  const changeStatus = useCallback(async (taskId: string, status: TaskStatus) => {
+    const snapshot = tasks
+    setTasks(current =>
+      current.map(t => t.id === taskId ? { ...t, status, updated_at: new Date().toISOString() } : t)
+    )
+
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('tasks')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', taskId)
+
+    if (error) {
+      toast.error('Nie udało się zmienić statusu')
+      setTasks(snapshot)
+    }
+  }, [tasks])
+
+  const refresh = useCallback(() => setRefreshKey(k => k + 1), [])
+
+  return { tasks, loading, createTask, updateTask, deleteTask, changeStatus, refresh }
 }

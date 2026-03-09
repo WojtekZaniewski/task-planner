@@ -29,8 +29,21 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // Refresh session if it exists
-  await supabase.auth.getUser()
+  // Refresh session and enforce route protection
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { pathname } = request.nextUrl
+  const isPublicPath =
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/api/auth')
+
+  if (!user && !isPublicPath) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (user && pathname === '/login') {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
   return supabaseResponse
 }

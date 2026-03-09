@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function DashboardPage() {
   const { tasks, loading, createTask, changeStatus, deleteTask } = useTasks()
-  const { addThought, archiveMission } = useJournal()
+  const { activeMission, addThought, archiveMission, saveMission } = useJournal()
   const [missionActive, setMissionActive] = useState(false)
   const [thoughtText, setThoughtText] = useState('')
 
@@ -46,6 +46,8 @@ export default function DashboardPage() {
         <HeroTile
           total={tasks.length}
           done={doneTasks.length}
+          activeMission={activeMission}
+          onMissionSave={saveMission}
           onMissionChange={handleMissionChange}
           onMissionComplete={archiveMission}
         />

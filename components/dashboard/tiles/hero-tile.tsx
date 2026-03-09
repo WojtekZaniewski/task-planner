@@ -6,92 +6,70 @@ import { Input } from '@/components/ui/input'
 import { format, differenceInDays, parseISO } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import { CalendarDays, Pencil, Save, Clock, Wallet, Trophy } from 'lucide-react'
+import type { MissionGoal } from '@/lib/types'
 
 interface HeroTileProps {
   total: number
   done: number
+  activeMission: MissionGoal | null
+  onMissionSave: (draft: MissionGoal) => Promise<void>
   onMissionChange?: (active: boolean) => void
   onMissionComplete?: (name: string, target: number, tasksCompleted: number, startedAt: string, deadline?: string, moneyGoal?: number) => void
 }
 
-export const MISSION_STORAGE_KEY = 'task-planner-mission'
-
-export interface MissionGoal {
-  name: string
-  target: number
-  startedAt?: string
-  deadline?: string
-  moneyGoal?: number
-  moneyBalance?: number
-}
-
-export function HeroTile({ total, done, onMissionChange, onMissionComplete }: HeroTileProps) {
+export function HeroTile({ total, done, activeMission, onMissionSave, onMissionChange, onMissionComplete }: HeroTileProps) {
   const today = format(new Date(), "EEEE, d MMMM", { locale: pl })
   const [editing, setEditing] = useState(false)
-  const [goal, setGoal] = useState<MissionGoal>({ name: '', target: 0 })
-  const [draft, setDraft] = useState<MissionGoal>({ name: '', target: 0 })
+  const [draft, setDraft] = useState<MissionGoal>({ name: '', target: 10 })
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem(MISSION_STORAGE_KEY)
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as MissionGoal
-        setGoal(parsed)
-        setDraft(parsed)
-        onMissionChange?.(!!parsed.name && parsed.target > 0)
-      } catch { /* ignore */ }
-    }
-  }, [onMissionChange])
+    onMissionChange?.(!!activeMission)
+  }, [activeMission, onMissionChange])
 
-  const hasGoal = !!(goal.name && goal.target > 0)
-  const target = hasGoal ? goal.target : total
+  const hasGoal = !!(activeMission?.name && activeMission?.target > 0)
+  const target = hasGoal ? activeMission!.target : total
   const percentage = target === 0 ? 0 : Math.min(100, Math.round((done / target) * 100))
   const circumference = 2 * Math.PI * 54
   const offset = circumference - (percentage / 100) * circumference
 
-  const daysLeft = goal.deadline
-    ? differenceInDays(parseISO(goal.deadline), new Date())
+  const daysLeft = activeMission?.deadline
+    ? differenceInDays(parseISO(activeMission.deadline), new Date())
     : null
 
-  const moneyMissing = goal.moneyGoal && goal.moneyGoal > 0
-    ? goal.moneyGoal - (goal.moneyBalance || 0)
+  const moneyMissing = activeMission?.moneyGoal && activeMission.moneyGoal > 0
+    ? activeMission.moneyGoal - (activeMission.moneyBalance || 0)
     : null
 
-  function handleSave() {
+  async function handleSave() {
     if (!draft.name.trim() || draft.target < 1) return
-    const saved: MissionGoal = {
+    setSaving(true)
+    await onMissionSave({
       name: draft.name.trim(),
       target: draft.target,
-      startedAt: goal.startedAt || new Date().toISOString(),
+      startedAt: activeMission?.startedAt || new Date().toISOString(),
       deadline: draft.deadline || undefined,
       moneyGoal: draft.moneyGoal || undefined,
       moneyBalance: draft.moneyBalance || undefined,
-    }
-    setGoal(saved)
-    localStorage.setItem(MISSION_STORAGE_KEY, JSON.stringify(saved))
-    onMissionChange?.(true)
+    })
+    setSaving(false)
     setEditing(false)
   }
 
   function handleComplete() {
-    if (!hasGoal) return
+    if (!hasGoal || !activeMission) return
     onMissionComplete?.(
-      goal.name,
-      goal.target,
+      activeMission.name,
+      activeMission.target,
       done,
-      goal.startedAt || new Date().toISOString(),
-      goal.deadline,
-      goal.moneyGoal,
+      activeMission.startedAt || new Date().toISOString(),
+      activeMission.deadline,
+      activeMission.moneyGoal,
     )
-    // Clear mission
-    setGoal({ name: '', target: 0 })
-    setDraft({ name: '', target: 0 })
-    localStorage.removeItem(MISSION_STORAGE_KEY)
-    onMissionChange?.(false)
   }
 
   function openEdit() {
-    setDraft(goal.name ? { ...goal } : { name: '', target: 10 })
+    setDraft(activeMission ? { ...activeMission } : { name: '', target: 10 })
     setEditing(true)
   }
 
@@ -104,7 +82,7 @@ export function HeroTile({ total, done, onMissionChange, onMissionComplete }: He
             <span className="text-primary">misja</span>
           </h1>
           {hasGoal && !editing && (
-            <p className="text-sm text-muted-foreground mt-2">{goal.name}</p>
+            <p className="text-sm text-muted-foreground mt-2">{activeMission!.name}</p>
           )}
         </div>
         {!editing && (
@@ -192,11 +170,11 @@ export function HeroTile({ total, done, onMissionChange, onMissionComplete }: He
           <button
             type="button"
             onClick={handleSave}
-            disabled={!draft.name.trim() || draft.target < 1}
+            disabled={!draft.name.trim() || draft.target < 1 || saving}
             className="glass-button-primary w-full rounded-2xl px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Save className="h-4 w-4" />
-            Zapisz cel
+            {saving ? 'Zapisuję...' : 'Zapisz cel'}
           </button>
         </div>
       ) : (

@@ -1,138 +1,216 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import type { CompletedMission, Thought } from '@/lib/types'
-import { MISSION_STORAGE_KEY } from '@/components/dashboard/tiles/hero-tile'
+import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase/client'
+import type { CompletedMission, MissionGoal, MissionRow, MissionThoughtRow, Thought } from '@/lib/types'
 
-const JOURNAL_KEY = 'task-planner-journal'
-const THOUGHTS_KEY = 'task-planner-thoughts'
+function rowToThought(row: MissionThoughtRow): Thought {
+  return { id: row.id, text: row.text, createdAt: row.created_at, missionId: row.mission_id }
+}
 
-function loadJournal(): CompletedMission[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const stored = localStorage.getItem(JOURNAL_KEY)
-    return stored ? JSON.parse(stored) : []
-  } catch {
-    return []
+function rowToCompleted(row: MissionRow & { mission_thoughts: MissionThoughtRow[] }): CompletedMission {
+  return {
+    id: row.id,
+    name: row.name,
+    target: row.target,
+    tasksCompleted: row.tasks_completed ?? 0,
+    startedAt: row.started_at,
+    completedAt: row.completed_at!,
+    deadline: row.deadline ?? undefined,
+    moneyGoal: row.money_goal ?? undefined,
+    thoughts: (row.mission_thoughts ?? []).map(rowToThought),
   }
-}
-
-function saveJournal(missions: CompletedMission[]) {
-  localStorage.setItem(JOURNAL_KEY, JSON.stringify(missions))
-}
-
-function loadThoughts(): Thought[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const stored = localStorage.getItem(THOUGHTS_KEY)
-    return stored ? JSON.parse(stored) : []
-  } catch {
-    return []
-  }
-}
-
-function saveThoughts(thoughts: Thought[]) {
-  localStorage.setItem(THOUGHTS_KEY, JSON.stringify(thoughts))
 }
 
 export function useJournal() {
+  const [activeMission, setActiveMission] = useState<MissionGoal | null>(null)
+  const [activeMissionId, setActiveMissionId] = useState<string | null>(null)
   const [completedMissions, setCompletedMissions] = useState<CompletedMission[]>([])
-  const [thoughts, setThoughts] = useState<Thought[]>([])
+  const [activeThoughts, setActiveThoughts] = useState<Thought[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setCompletedMissions(loadJournal())
-    setThoughts(loadThoughts())
-    setLoading(false)
+    let cancelled = false
+
+    async function load() {
+      setLoading(true)
+      const supabase = createClient()
+
+      const [activeRes, completedRes] = await Promise.all([
+        supabase.from('missions').select('*').is('completed_at', null).maybeSingle(),
+        supabase
+          .from('missions')
+          .select('*, mission_thoughts(*)')
+          .not('completed_at', 'is', null)
+          .order('completed_at', { ascending: false }),
+      ])
+
+      if (cancelled) return
+
+      if (activeRes.error) toast.error('Nie udało się załadować misji')
+      if (completedRes.error) toast.error('Nie udało się załadować dziennika')
+
+      const activeRow = activeRes.data as MissionRow | null
+
+      if (activeRow) {
+        setActiveMissionId(activeRow.id)
+        setActiveMission({
+          name: activeRow.name,
+          target: activeRow.target,
+          startedAt: activeRow.started_at,
+          deadline: activeRow.deadline ?? undefined,
+          moneyGoal: activeRow.money_goal ?? undefined,
+          moneyBalance: activeRow.money_balance ?? undefined,
+        })
+
+        // Load active thoughts
+        const { data: thoughtsData } = await supabase
+          .from('mission_thoughts')
+          .select('*')
+          .eq('mission_id', activeRow.id)
+          .order('created_at', { ascending: false })
+
+        if (!cancelled) {
+          setActiveThoughts((thoughtsData ?? []).map(rowToThought))
+        }
+      } else {
+        setActiveMissionId(null)
+        setActiveMission(null)
+        setActiveThoughts([])
+      }
+
+      const completedRows = (completedRes.data ?? []) as (MissionRow & { mission_thoughts: MissionThoughtRow[] })[]
+      setCompletedMissions(completedRows.map(rowToCompleted))
+      setLoading(false)
+    }
+
+    load()
+    return () => { cancelled = true }
   }, [])
 
-  const archiveMission = useCallback(
-    (name: string, target: number, tasksCompleted: number, startedAt: string, deadline?: string, moneyGoal?: number) => {
-      const missionId = crypto.randomUUID()
-      const now = new Date().toISOString()
+  const saveMission = useCallback(async (draft: MissionGoal) => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
 
-      // Collect thoughts for the active mission
-      const currentThoughts = loadThoughts()
-      const missionThoughts = currentThoughts.filter(t => t.missionId === 'active')
-      const updatedMissionThoughts = missionThoughts.map(t => ({ ...t, missionId: missionId }))
-      const remainingThoughts = currentThoughts.filter(t => t.missionId !== 'active')
+    if (activeMissionId) {
+      // Update existing active mission
+      const { error } = await supabase
+        .from('missions')
+        .update({
+          name: draft.name,
+          target: draft.target,
+          deadline: draft.deadline || null,
+          money_goal: draft.moneyGoal || null,
+          money_balance: draft.moneyBalance || null,
+        })
+        .eq('id', activeMissionId)
 
-      const mission: CompletedMission = {
-        id: missionId,
-        name,
-        target,
-        tasksCompleted,
-        startedAt,
-        completedAt: now,
-        deadline,
-        moneyGoal,
-        thoughts: updatedMissionThoughts,
-      }
+      if (error) { toast.error('Nie udało się zapisać misji'); return }
+    } else {
+      // Insert new active mission
+      const { data: created, error } = await supabase
+        .from('missions')
+        .insert({
+          user_id: user.id,
+          name: draft.name,
+          target: draft.target,
+          deadline: draft.deadline || null,
+          money_goal: draft.moneyGoal || null,
+          money_balance: draft.moneyBalance || null,
+        })
+        .select()
+        .single()
 
-      setCompletedMissions(prev => {
-        const updated = [mission, ...prev]
-        saveJournal(updated)
-        return updated
-      })
+      if (error) { toast.error('Nie udało się utworzyć misji'); return }
+      if (created) setActiveMissionId(created.id)
+    }
 
-      // Update thoughts — reassign active → missionId, keep rest
-      setThoughts(remainingThoughts.concat(updatedMissionThoughts))
-      saveThoughts(remainingThoughts.concat(updatedMissionThoughts))
-    },
-    []
-  )
+    setActiveMission({ ...draft })
+  }, [activeMissionId])
 
-  const addThought = useCallback(
-    (text: string) => {
-      const thought: Thought = {
-        id: crypto.randomUUID(),
-        text,
-        createdAt: new Date().toISOString(),
-        missionId: 'active',
-      }
+  const archiveMission = useCallback(async (
+    name: string,
+    target: number,
+    tasksCompleted: number,
+    startedAt: string,
+    deadline?: string,
+    moneyGoal?: number,
+  ) => {
+    if (!activeMissionId) return
 
-      setThoughts(prev => {
-        const updated = [thought, ...prev]
-        saveThoughts(updated)
-        return updated
-      })
-    },
-    []
-  )
+    const supabase = createClient()
+    const now = new Date().toISOString()
 
-  const getThoughtsForMission = useCallback(
-    (missionId: string): Thought[] => {
-      // First check embedded thoughts in completed missions
-      const mission = completedMissions.find(m => m.id === missionId)
-      if (mission?.thoughts.length) return mission.thoughts
-      // Fallback to global thoughts list
-      return thoughts.filter(t => t.missionId === missionId)
-    },
-    [completedMissions, thoughts]
-  )
+    const { error } = await supabase
+      .from('missions')
+      .update({ completed_at: now, tasks_completed: tasksCompleted })
+      .eq('id', activeMissionId)
+      .is('completed_at', null)
+
+    if (error) { toast.error('Nie udało się zakończyć misji'); return }
+
+    const archived: CompletedMission = {
+      id: activeMissionId,
+      name,
+      target,
+      tasksCompleted,
+      startedAt,
+      completedAt: now,
+      deadline,
+      moneyGoal,
+      thoughts: activeThoughts,
+    }
+
+    setCompletedMissions(prev => [archived, ...prev])
+    setActiveMission(null)
+    setActiveMissionId(null)
+    setActiveThoughts([])
+  }, [activeMissionId, activeThoughts])
+
+  const addThought = useCallback(async (text: string) => {
+    if (!activeMissionId) return
+
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const { data, error } = await supabase
+      .from('mission_thoughts')
+      .insert({ mission_id: activeMissionId, user_id: user.id, text })
+      .select()
+      .single()
+
+    if (error) { toast.error('Nie udało się dodać przemyślenia'); return }
+    if (data) setActiveThoughts(prev => [rowToThought(data), ...prev])
+  }, [activeMissionId])
+
+  const getThoughtsForMission = useCallback((missionId: string): Thought[] => {
+    if (missionId === activeMissionId) return activeThoughts
+    const mission = completedMissions.find(m => m.id === missionId)
+    return mission?.thoughts ?? []
+  }, [activeMissionId, activeThoughts, completedMissions])
 
   const getWeeklySummary = useCallback(() => {
     const weekAgo = new Date()
     weekAgo.setDate(weekAgo.getDate() - 7)
     const weekAgoISO = weekAgo.toISOString()
-
     const recentMissions = completedMissions.filter(m => m.completedAt >= weekAgoISO)
-    const totalTasks = recentMissions.reduce((sum, m) => sum + m.tasksCompleted, 0)
-
     return {
       missions: recentMissions,
       missionsCount: recentMissions.length,
-      totalTasks,
+      totalTasks: recentMissions.reduce((sum, m) => sum + m.tasksCompleted, 0),
     }
   }, [completedMissions])
 
-  const activeThoughts = thoughts.filter(t => t.missionId === 'active')
-
   return {
+    activeMission,
     completedMissions,
-    thoughts,
     activeThoughts,
+    thoughts: activeThoughts,
     loading,
+    saveMission,
     archiveMission,
     addThought,
     getThoughtsForMission,
