@@ -72,6 +72,44 @@ export interface CompletedMission {
   thoughts: Thought[]
 }
 
+export interface Workspace {
+  id: string
+  name: string
+  description: string | null
+  owner_id: string
+  created_at: string
+}
+
+export interface WorkspaceMember {
+  workspace_id: string
+  user_id: string
+  role: 'owner' | 'admin' | 'member'
+  joined_at: string
+  profile?: Profile
+}
+
+export interface WorkspaceInvite {
+  id: string
+  workspace_id: string
+  code: string
+  created_by: string
+  created_at: string
+}
+
+export interface WorkspaceMission {
+  id: string
+  workspace_id: string
+  name: string
+  target: number
+  started_at: string
+  completed_at: string | null
+  deadline: string | null
+  money_goal: number | null
+  money_balance: number | null
+  tasks_completed: number
+  created_by: string
+}
+
 export interface VoiceNoteRow {
   id: string
   user_id: string
