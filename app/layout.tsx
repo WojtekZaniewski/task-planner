@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { ServiceWorkerRegister } from '@/components/pwa/sw-register'
 import { NotificationSetup } from '@/components/pwa/NotificationSetup'
 import { StandaloneGate } from '@/components/pwa/StandaloneGate'
+import { CapacitorTokenBridge } from '@/components/pwa/CapacitorTokenBridge'
 import './globals.css'
 
 const inter = Inter({
@@ -49,6 +50,7 @@ export default function RootLayout({
         </StandaloneGate>
         <Toaster position="bottom-right" richColors />
         <ServiceWorkerRegister />
+        <CapacitorTokenBridge />
       </body>
     </html>
   )
