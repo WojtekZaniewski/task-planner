@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Users, Copy, RefreshCw, LogOut, Plus, ChevronDown, Check, Send, Target } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Users, Copy, RefreshCw, LogOut, Plus, ChevronDown, Check, Send, Target, BookOpen } from 'lucide-react'
 import { useWorkspace } from '@/lib/hooks/use-workspace'
 import { useWorkspaceTasks } from '@/lib/hooks/use-workspace-tasks'
 import { useWorkspaceMission } from '@/lib/hooks/use-workspace-mission'
+import { useWorkspaceJournal } from '@/lib/hooks/use-workspace-journal'
 import { GlassCard } from '@/components/dashboard/glass-card'
 import { BentoGrid } from '@/components/dashboard/bento-grid'
 import { HeroTile } from '@/components/dashboard/tiles/hero-tile'
@@ -214,6 +216,36 @@ function WorkspaceQuickAdd({
   )
 }
 
+// ── Workspace journal tile ────────────────────────────────────────────────────
+
+function WorkspaceJournalTile({ completedCount }: { completedCount: number }) {
+  const router = useRouter()
+  const t = useTranslations()
+  return (
+    <GlassCard
+      className="bento-1x1 flex flex-col items-center justify-center gap-3 cursor-pointer"
+      hover
+    >
+      <div onClick={() => router.push('/workspace/journal')} className="flex flex-col items-center justify-center gap-3 w-full h-full">
+        <div className="relative">
+          <BookOpen className="h-8 w-8 text-primary" />
+          {completedCount > 0 && (
+            <span className="absolute -top-1.5 -right-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+              {completedCount}
+            </span>
+          )}
+        </div>
+        <p className="text-sm font-semibold text-foreground">{t.workspace.journalTileLabel}</p>
+        <p className="text-xs text-muted-foreground text-center">
+          {completedCount === 0
+            ? t.journal.noCompletedShort
+            : t.journal.missionsCount(completedCount)}
+        </p>
+      </div>
+    </GlassCard>
+  )
+}
+
 // ── Main workspace view ───────────────────────────────────────────────────────
 
 function WorkspaceView({
@@ -235,10 +267,12 @@ function WorkspaceView({
   const t = useTranslations()
   const { tasks, createTask, changeStatus, deleteTask } = useWorkspaceTasks(activeWorkspace.id)
   const { activeMission, saveMission, completeMission } = useWorkspaceMission(activeWorkspace.id)
+  const { completedMissions, addThought } = useWorkspaceJournal(activeWorkspace.id, activeMission?.id ?? null)
 
   const [copied, setCopied] = useState(false)
   const [missionActive, setMissionActive] = useState(false)
   const [showSwitcher, setShowSwitcher] = useState(false)
+  const [thoughtText, setThoughtText] = useState('')
 
   const doneTasks = tasks.filter(task => task.status === 'done')
 
@@ -254,6 +288,13 @@ function WorkspaceView({
     : null
 
   const handleMissionChange = useCallback((active: boolean) => setMissionActive(active), [])
+
+  function handleThoughtSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!thoughtText.trim()) return
+    addThought(thoughtText.trim())
+    setThoughtText('')
+  }
 
   async function handleCopy() {
     if (!invite?.code) return
@@ -330,10 +371,34 @@ function WorkspaceView({
           onMissionComplete={completeMission}
         />
         <WorkspaceQuickAdd onAdd={createTask} missionActive={missionActive} />
+        <WorkspaceJournalTile completedCount={completedMissions.length} />
         {tasks.map(task => (
           <TaskTile key={task.id} task={task} onStatusChange={changeStatus} onDelete={deleteTask} />
         ))}
       </BentoGrid>
+
+      {missionActive && (
+        <form
+          onSubmit={handleThoughtSubmit}
+          className="glass rounded-bento px-5 py-3 flex items-center gap-3"
+        >
+          <input
+            type="text"
+            placeholder={t.workspace.thoughtPlaceholder}
+            value={thoughtText}
+            onChange={(e) => setThoughtText(e.target.value)}
+            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+          />
+          <button
+            type="submit"
+            aria-label={t.workspace.addThought}
+            disabled={!thoughtText.trim()}
+            className="text-primary disabled:opacity-30 transition-opacity"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </form>
+      )}
 
       {/* Members */}
       <GlassCard>

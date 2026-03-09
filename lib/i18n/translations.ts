@@ -192,6 +192,10 @@ const pl = {
     cancel: 'Anuluj',
     errorCreate: 'Nie udało się utworzyć przestrzeni roboczej',
     errorJoin: 'Nie udało się dołączyć do przestrzeni roboczej',
+    journalTitle: 'Dziennik misji',
+    journalTileLabel: 'Dziennik',
+    thoughtPlaceholder: 'Przemyślenie zespołu...',
+    addThought: 'Dodaj przemyślenie',
   },
 }
 
@@ -383,6 +387,10 @@ const en: typeof pl = {
     cancel: 'Cancel',
     errorCreate: 'Failed to create workspace',
     errorJoin: 'Failed to join workspace',
+    journalTitle: 'Mission journal',
+    journalTileLabel: 'Journal',
+    thoughtPlaceholder: 'Team thought...',
+    addThought: 'Add thought',
   },
 }
 

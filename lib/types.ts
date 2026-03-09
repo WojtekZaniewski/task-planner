@@ -110,6 +110,27 @@ export interface WorkspaceMission {
   created_by: string
 }
 
+export interface WorkspaceMissionThoughtRow {
+  id: string
+  workspace_mission_id: string
+  user_id: string
+  text: string
+  created_at: string
+}
+
+export interface WorkspaceCompletedMission {
+  id: string
+  workspaceId: string
+  name: string
+  target: number
+  tasksCompleted: number
+  startedAt: string
+  completedAt: string
+  deadline?: string
+  moneyGoal?: number
+  thoughts: Thought[]
+}
+
 export interface VoiceNoteRow {
   id: string
   user_id: string
