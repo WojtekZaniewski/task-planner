@@ -111,14 +111,21 @@ export function StandaloneGate({ children }: { children: React.ReactNode }) {
   // Default false — always starts with the gate (no null/blank flash, no SSR mismatch)
   const [isStandalone, setIsStandalone] = useState(false)
   const [isIos, setIsIos] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    const ua = navigator.userAgent
+    const mobile = /android|iphone|ipad|ipod/i.test(ua)
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       ('standalone' in navigator && (navigator as { standalone?: boolean }).standalone === true)
     setIsStandalone(standalone)
-    setIsIos(/iphone|ipad|ipod/i.test(navigator.userAgent))
+    setIsIos(/iphone|ipad|ipod/i.test(ua))
+    setIsMobile(mobile)
   }, [])
+
+  // On desktop/laptop — always allow through
+  if (!isMobile) return <>{children}</>
 
   if (!isStandalone) return <InstallGate isIos={isIos} />
   return <>{children}</>
