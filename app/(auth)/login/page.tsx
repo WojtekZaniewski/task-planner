@@ -50,9 +50,6 @@ export default function LoginPage() {
         Zaloguj się przez Google
       </button>
 
-      <p className="text-xs text-muted-foreground text-center">
-        Twoje dane są tylko Twoje
-      </p>
     </div>
   )
 }
