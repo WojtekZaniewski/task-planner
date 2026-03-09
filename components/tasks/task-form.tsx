@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Loader2 } from 'lucide-react'
 import type { Task, TaskStatus, TaskPriority } from '@/lib/types'
 import type { TaskFormData } from '@/lib/hooks/use-tasks'
+import { useTranslations } from '@/lib/i18n'
 
 interface TaskFormProps {
   open: boolean
@@ -19,6 +20,7 @@ interface TaskFormProps {
 }
 
 export function TaskForm({ open, onOpenChange, onSubmit, editTask }: TaskFormProps) {
+  const t = useTranslations()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState<TaskStatus>('todo')
@@ -69,61 +71,61 @@ export function TaskForm({ open, onOpenChange, onSubmit, editTask }: TaskFormPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="glass-strong border-white/30 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{editTask ? 'Edytuj zadanie' : 'Nowe zadanie'}</DialogTitle>
+          <DialogTitle>{editTask ? t.tasks.editTask : t.tasks.newTask}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Tytuł</Label>
+            <Label htmlFor="title">{t.tasks.titleLabel}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Nazwa zadania"
+              placeholder={t.tasks.titlePlaceholder}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description">Opis</Label>
+            <Label htmlFor="description">{t.tasks.descriptionLabel}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Opcjonalny opis..."
+              placeholder={t.tasks.descriptionPlaceholder}
               rows={3}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label>{t.tasks.statusLabel}</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as TaskStatus)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todo">Do zrobienia</SelectItem>
-                  <SelectItem value="in_progress">W trakcie</SelectItem>
-                  <SelectItem value="done">Zrobione</SelectItem>
+                  <SelectItem value="todo">{t.tasks.statusTodo}</SelectItem>
+                  <SelectItem value="in_progress">{t.tasks.statusInProgress}</SelectItem>
+                  <SelectItem value="done">{t.tasks.statusDone}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Priorytet</Label>
+              <Label>{t.tasks.priorityLabel}</Label>
               <Select value={priority} onValueChange={(v) => setPriority(v as TaskPriority)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Niski</SelectItem>
-                  <SelectItem value="medium">Średni</SelectItem>
-                  <SelectItem value="high">Wysoki</SelectItem>
-                  <SelectItem value="urgent">Pilny</SelectItem>
+                  <SelectItem value="low">{t.tasks.priorityLow}</SelectItem>
+                  <SelectItem value="medium">{t.tasks.priorityMedium}</SelectItem>
+                  <SelectItem value="high">{t.tasks.priorityHigh}</SelectItem>
+                  <SelectItem value="urgent">{t.tasks.priorityUrgent}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="dueDate">Data</Label>
+              <Label htmlFor="dueDate">{t.tasks.dateLabel}</Label>
               <Input
                 id="dueDate"
                 type="date"
@@ -132,7 +134,7 @@ export function TaskForm({ open, onOpenChange, onSubmit, editTask }: TaskFormPro
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="dueTime">Godzina</Label>
+              <Label htmlFor="dueTime">{t.tasks.timeLabel}</Label>
               <Input
                 id="dueTime"
                 type="time"
@@ -143,7 +145,7 @@ export function TaskForm({ open, onOpenChange, onSubmit, editTask }: TaskFormPro
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading && <Loader2 className="animate-spin" />}
-            {editTask ? 'Zapisz zmiany' : 'Utwórz zadanie'}
+            {editTask ? t.tasks.saveChanges : t.tasks.createTask}
           </Button>
         </form>
       </DialogContent>

@@ -55,7 +55,7 @@ function InstallGate({ isIos }: { isIos: boolean }) {
         {isIos ? (
           <div className="space-y-3">
             <Step number={1}>
-              Kliknij <Share className="inline h-4 w-4 mx-1 align-text-bottom" />
+              {t.gate.iosStep1prefix} <Share className="inline h-4 w-4 mx-1 align-text-bottom" />
               {t.gate.iosStep1suffix}
             </Step>
             <Step number={2}>

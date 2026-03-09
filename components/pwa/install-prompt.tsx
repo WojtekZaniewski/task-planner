@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Download, Share, X } from 'lucide-react'
+import { useTranslations } from '@/lib/i18n'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -10,6 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPrompt() {
+  const t = useTranslations()
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [dismissed, setDismissed] = useState(false)
   const [isIos, setIsIos] = useState(false)
@@ -76,16 +78,16 @@ export function InstallPrompt() {
               <Share className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">Dodaj do ekranu głównego</p>
+              <p className="text-sm font-medium">{t.installPrompt.iosTitle}</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Kliknij <Share className="inline h-3 w-3 mx-0.5" /> w pasku Safari, a następnie „Dodaj do ekranu głównego"
+                {t.installPrompt.iosPrefix} <Share className="inline h-3 w-3 mx-0.5" /> {t.installPrompt.iosSuffix}
               </p>
             </div>
             <button
               type="button"
               onClick={handleIosDismiss}
               className="text-muted-foreground hover:text-foreground transition-colors p-1 shrink-0"
-              aria-label="Zamknij"
+              aria-label={t.installPrompt.close}
             >
               <X className="h-4 w-4" />
             </button>
@@ -105,14 +107,14 @@ export function InstallPrompt() {
           <Download className="h-5 w-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium">Aplikacja dostępna</p>
+          <p className="text-sm font-medium">{t.installPrompt.appAvailable}</p>
           <p className="text-xs text-muted-foreground">
-            Zainstaluj tasks na swoim urządzeniu
+            {t.installPrompt.installDesc}
           </p>
         </div>
         <div className="flex items-center gap-1">
           <Button size="sm" onClick={handleInstall}>
-            Instaluj
+            {t.installPrompt.install}
           </Button>
           <Button
             variant="ghost"

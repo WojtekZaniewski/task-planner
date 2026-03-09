@@ -4,10 +4,12 @@ import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/dashboard/glass-card'
 import { BookOpen } from 'lucide-react'
 import { useJournal } from '@/lib/hooks/use-journal'
+import { useTranslations } from '@/lib/i18n'
 
 export function JournalTile() {
   const router = useRouter()
   const { completedMissions } = useJournal()
+  const t = useTranslations()
 
   return (
     <GlassCard
@@ -23,11 +25,11 @@ export function JournalTile() {
             </span>
           )}
         </div>
-        <p className="text-sm font-semibold text-foreground">Dziennik</p>
+        <p className="text-sm font-semibold text-foreground">{t.nav.journal}</p>
         <p className="text-xs text-muted-foreground text-center">
           {completedMissions.length === 0
-            ? 'Brak ukończonych misji'
-            : `${completedMissions.length} ${completedMissions.length === 1 ? 'misja' : completedMissions.length < 5 ? 'misje' : 'misji'}`}
+            ? t.journal.noCompletedShort
+            : t.journal.missionsCount(completedMissions.length)}
         </p>
       </div>
     </GlassCard>

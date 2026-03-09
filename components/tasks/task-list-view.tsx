@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react'
 import type { Task, TaskStatus } from '@/lib/types'
 import type { TaskFormData } from '@/lib/hooks/use-tasks'
 import { GlassCard } from '@/components/dashboard/glass-card'
+import { useTranslations } from '@/lib/i18n'
 
 interface TaskListViewProps {
   tasks: Task[]
@@ -25,6 +26,7 @@ export function TaskListView({
   onUpdateTask,
   onDeleteTask,
 }: TaskListViewProps) {
+  const t = useTranslations()
   const [formOpen, setFormOpen] = useState(false)
   const [editTask, setEditTask] = useState<Task | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -57,9 +59,9 @@ export function TaskListView({
   }
 
   const labels: Record<string, string> = {
-    todo: 'Do zrobienia',
-    in_progress: 'W trakcie',
-    done: 'Zrobione',
+    todo: t.tasks.statusTodo,
+    in_progress: t.tasks.statusInProgress,
+    done: t.tasks.statusDone,
   }
 
   return (
@@ -68,31 +70,31 @@ export function TaskListView({
         <div className="flex items-center gap-2">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-36 bg-white/50">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t.tasks.statusLabel} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Wszystkie</SelectItem>
-              <SelectItem value="todo">Do zrobienia</SelectItem>
-              <SelectItem value="in_progress">W trakcie</SelectItem>
-              <SelectItem value="done">Zrobione</SelectItem>
+              <SelectItem value="all">{t.tasks.allFilter}</SelectItem>
+              <SelectItem value="todo">{t.tasks.statusTodo}</SelectItem>
+              <SelectItem value="in_progress">{t.tasks.statusInProgress}</SelectItem>
+              <SelectItem value="done">{t.tasks.statusDone}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
             <SelectTrigger className="w-32 bg-white/50">
-              <SelectValue placeholder="Priorytet" />
+              <SelectValue placeholder={t.tasks.priorityLabel} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Wszystkie</SelectItem>
-              <SelectItem value="urgent">Pilne</SelectItem>
-              <SelectItem value="high">Wysokie</SelectItem>
-              <SelectItem value="medium">Średnie</SelectItem>
-              <SelectItem value="low">Niskie</SelectItem>
+              <SelectItem value="all">{t.tasks.allFilter}</SelectItem>
+              <SelectItem value="urgent">{t.tasks.urgentFilter}</SelectItem>
+              <SelectItem value="high">{t.tasks.highFilter}</SelectItem>
+              <SelectItem value="medium">{t.tasks.mediumFilter}</SelectItem>
+              <SelectItem value="low">{t.tasks.lowFilter}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <Button onClick={() => { setEditTask(null); setFormOpen(true) }}>
           <Plus className="h-4 w-4 mr-2" />
-          Nowe zadanie
+          {t.tasks.newTask}
         </Button>
       </div>
 
@@ -120,9 +122,9 @@ export function TaskListView({
 
       {filtered.length === 0 && (
         <GlassCard className="py-12 text-center" hover={false}>
-          <p className="text-muted-foreground">Brak zadań</p>
+          <p className="text-muted-foreground">{t.tasks.noTasks}</p>
           <Button variant="link" className="mt-2 text-primary" onClick={() => { setEditTask(null); setFormOpen(true) }}>
-            Utwórz pierwsze zadanie
+            {t.tasks.createFirst}
           </Button>
         </GlassCard>
       )}

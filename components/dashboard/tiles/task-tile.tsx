@@ -3,6 +3,7 @@
 import { X } from 'lucide-react'
 import type { Task, TaskStatus } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { useTranslations } from '@/lib/i18n'
 
 interface TaskTileProps {
   task: Task
@@ -11,6 +12,7 @@ interface TaskTileProps {
 }
 
 export function TaskTile({ task, onStatusChange, onDelete }: TaskTileProps) {
+  const t = useTranslations()
   const isDone = task.status === 'done'
 
   function handleClick() {
@@ -33,7 +35,7 @@ export function TaskTile({ task, onStatusChange, onDelete }: TaskTileProps) {
     >
       <button
         type="button"
-        aria-label="Usuń zadanie"
+        aria-label={t.tasks.deleteTask}
         onClick={handleDelete}
         className={cn(
           'absolute top-2 right-3 p-1 rounded-full transition-colors',
