@@ -10,7 +10,7 @@ export interface NotificationPrefs {
 }
 
 const STORAGE_KEY = 'task-planner-notifications'
-const SESSION_KEY = 'task-planner-notifications-dismissed'
+const DISMISSED_KEY = 'task-planner-notifications-dismissed'
 
 function getToday(): string {
   return new Date().toISOString().slice(0, 10)
@@ -41,10 +41,10 @@ export function useNotifications() {
     setPrefs(loaded)
     if ('Notification' in window) setPermission(Notification.permission)
 
-    // Show prompt if never configured and not dismissed this session
-    const sessionDismissed = sessionStorage.getItem(SESSION_KEY)
+    // Show prompt only if never configured and never dismissed
+    const dismissed = localStorage.getItem(DISMISSED_KEY)
     const notifDenied = 'Notification' in window && Notification.permission === 'denied'
-    if (!loaded && !sessionDismissed && !notifDenied) {
+    if (!loaded && !dismissed && !notifDenied) {
       setShowPrompt(true)
     }
   }, [])
@@ -89,7 +89,7 @@ export function useNotifications() {
   }, [])
 
   const dismiss = useCallback(() => {
-    sessionStorage.setItem(SESSION_KEY, '1')
+    localStorage.setItem(DISMISSED_KEY, '1')
     setShowPrompt(false)
   }, [])
 
