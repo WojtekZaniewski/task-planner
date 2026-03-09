@@ -17,7 +17,7 @@ export default function LoginPage() {
     <div className="glass rounded-bento p-8 w-full max-w-sm flex flex-col items-center gap-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-foreground">
-          Task<span className="text-primary">Planner</span>
+          tasks
         </h1>
         <p className="text-sm text-muted-foreground mt-2">
           Twoje zadania, Twoja misja

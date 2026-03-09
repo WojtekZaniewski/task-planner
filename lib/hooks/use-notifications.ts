@@ -60,7 +60,7 @@ export function useNotifications() {
     const today = getToday()
 
     if (Math.abs(diffMinutes) <= 10 && p.lastShown !== today) {
-      new Notification('TaskPlanner', {
+      new Notification('tasks', {
         body: 'Czas na sprawdzenie zadań! 🎯',
         icon: '/icons/icon-192x192.png',
       })
