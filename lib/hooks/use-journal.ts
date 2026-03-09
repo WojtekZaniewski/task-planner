@@ -206,6 +206,7 @@ export function useJournal() {
 
   return {
     activeMission,
+    activeMissionId,
     completedMissions,
     activeThoughts,
     thoughts: activeThoughts,

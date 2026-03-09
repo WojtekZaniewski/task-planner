@@ -71,3 +71,21 @@ export interface CompletedMission {
   moneyGoal?: number
   thoughts: Thought[]
 }
+
+export interface VoiceNoteRow {
+  id: string
+  user_id: string
+  mission_id: string
+  storage_path: string
+  duration_seconds: number | null
+  created_at: string
+}
+
+export interface VoiceNote {
+  id: string
+  missionId: string
+  storagePath: string
+  durationSeconds: number | null
+  createdAt: string
+  signedUrl?: string
+}
